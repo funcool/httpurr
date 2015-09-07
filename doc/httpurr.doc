@@ -1,0 +1,124 @@
+= Cats Documentation
+Funcool
+0.1.0
+:toc: left
+:!numbered:
+:idseparator: -
+:idprefix:
+:sectlinks:
+:source-highlighter: pygments
+:pygments-style: friendly
+
+A ring-inspired, promise-returning, *simple* ClojureScript HTTP client.
+
+== Why another library?
+
+There are plenty of HTTP client libraries available, each with its own design decisions. Here
+are the ones made for `httpurr`.
+
+* Promises are a natural fit for the request-response nature of HTTP. They contain either
+  an eventual value (the response) or an error value. CSP channels lack first class errors
+  and callbacks/errbacks are clumsy to compose.
+
+  `httpurr` uses `promesa`, a wrapper around the performant Bluebird JS library which
+  implements the Applicative and Monad protocols of `cats`. This means that you have core.async
+  like syntax with `cats.core/mlet` and, if you want to maximize concurrency, applicative
+  composition of promises with `cats.core/alet`.
+
+* A data based API, requests and responses are just maps. This makes easy to create requests
+  piping various transformations together and the same is true for responses.
+
+* No automatic encoding/decoding based on content type, it sits at a lower level. Is your
+  responsibility to encode and decode data, `httpurr` just speaks HTTP.
+
+* No automatic generation of query strings. There is no consensus on how to use query params
+  for things like collection and don't want to make the choice for you. `httpurr` uses `goog.net.Uri`
+  internally so your URLs we'll be correctly encoded.
+
+* Constants with every HTTP status code, sets of status codes and predicates for discerning response
+  types.
+
+* Intended as a infrastructure lib that sits at the bottom of your HTTP client API, I'll add
+  things judiciously.
+
+=== Alternatives
+
+There are several alternatives, `httpurr` tries to steal the best of each of them while having
+a promise-based API which no one offers.
+
+* **cljs-http**: Pretty popular and complete, uses CSP channels for responses. Implicitly
+  encodes and decodes data. It has some features like helpers for JSONP and auth that I may
+  eventually add to `httpurr`.
+* **cljs-ajax**: Works in both Clojure and ClojureScript. Implicitly encodes and decodes data.
+  Callback-based API.
+* **happy**: Encoding/decoding are explicit. Callback-based API. Works in both Clojure and
+  ClojureScript.
+
+All listed alternatives are licensed with EPL.
+
+== `http.client`
+
+`http.client` is the namespace containing the functions to perform HTPP requests.
+
+=== Requests
+
+Requests are maps with the following keys:
+- `:method` is a keyword with the HTTP method to use. All valid HTTP methods are supported.
+- `:url` is the URL of the request
+- `:headers` is a map from strings to strings with the headers of the request.
+- `:body` is the body of the request. Everything that `goog.net.Xhr` accepts is fine.
+- `:query-string` is a string with the query part of the URL.
+
+==== `send!`
+
+`send!` is a method that, given a request map and optionally a map of options, performs the
+request and returns a promise that will be resolved if there is a response and rejected on
+timeout, exceptions, HTTP errors or aborts.
+
+[source, clojure]
+----
+(require '[httpurr.client :as http])
+
+(http/send! {:method :get
+             :url    "https://api.github.com/orgs/funcool"})
+----
+
+The options map accepts a `:timeout`, in miliseconds, after which the promise will be rejected
+with the `:timeout` keyword as a value.
+
+==== HTTP method facade
+
+The `http.client` namespaces exposes `get`, `put`, `post`, `delete`, `head`, `options` and `trace`
+methods with identical signatures.
+
+They are three arity functions:
+
+- With one argument is assumed to be the URL of the request.
+- Two arguments: like above and the second the request map without the `:url` key.
+- Three arguments: like above and the third argument is an option map passed to `send!`.
+
+
+[source, clojure]
+----
+(require '[httpurr.client :as http])
+
+(http/get "https://api.github.com/orgs/funcool")
+----
+
+=== Responses
+
+Responses are maps with the following keys:
+- `:status` is the response status code.
+- `:headers` is a map from strings to strings with the headers of the response.
+- `:body` is the body of the response.
+
+== `http.status`
+
+
+== Error handling
+
+== Composing
+
+=== mlet
+
+=== alet
