@@ -28,22 +28,6 @@
       #js {}
       (clj->js h))))
 
-(defn xhr->response
-  [xhr]
-  {:pre [(.isSuccess xhr)]}
-  {:status  (.getStatus xhr)
-   :body    (.getResponse xhr)
-   :headers (js->clj (.getResponseHeaders xhr))})
-
-(defn xhr->error
-  [xhr]
-  {:pre [(not (.isSuccess xhr))]}
-  (condp = (.getLastErrorCode xhr)
-    ErrorCode.TIMEOUT    :timeout
-    ErrorCode.EXCEPTION  :exception
-    ErrorCode.HTTP_ERROR :http-error
-    ErrorCode.ABORT      :abort))
-
 (defn- perform!
   [request {timeout :timeout :or {timeout 0} :as options}]
   (let [{:keys [method
@@ -64,6 +48,22 @@
            body
            headers
            timeout)))
+
+(defn xhr->response
+  [xhr]
+  {:pre [(.isSuccess xhr)]}
+  {:status  (.getStatus xhr)
+   :body    (.getResponse xhr)
+   :headers (js->clj (.getResponseHeaders xhr))})
+
+(defn xhr->error
+  [xhr]
+  {:pre [(not (.isSuccess xhr))]}
+  (condp = (.getLastErrorCode xhr)
+    ErrorCode.TIMEOUT    :timeout
+    ErrorCode.EXCEPTION  :exception
+    ErrorCode.HTTP_ERROR :http-error
+    ErrorCode.ABORT      :abort))
 
 (defn xhr->promise
   "Given a XHR object return a promise that will be resolved
