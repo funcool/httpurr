@@ -1,4 +1,4 @@
-= Cats Documentation
+= httpurr
 Funcool
 0.1.0
 :toc: left
