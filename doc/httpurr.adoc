@@ -19,7 +19,6 @@ are the ones made for `httpurr`.
 * Promises are a natural fit for the request-response nature of HTTP. They contain either
   an eventual value (the response) or an error value. CSP channels lack first class errors
   and callbacks/errbacks are clumsy to compose.
-
   `httpurr` uses `promesa`, a wrapper around the performant Bluebird JS library which
   implements the Applicative and Monad protocols of `cats`. This means that you have core.async
   like syntax with `cats.core/mlet` and, if you want to maximize concurrency, applicative
@@ -56,18 +55,19 @@ a promise-based API which no one offers.
 
 All listed alternatives are licensed with EPL.
 
-== `http.client`
+== `httpurr.client`
 
-`http.client` is the namespace containing the functions to perform HTPP requests.
+`httpurr.client` is the namespace containing the functions to perform HTTP requests.
 
 === Requests
 
 Requests are maps with the following keys:
-- `:method` is a keyword with the HTTP method to use. All valid HTTP methods are supported.
-- `:url` is the URL of the request
-- `:headers` is a map from strings to strings with the headers of the request.
-- `:body` is the body of the request. Everything that `goog.net.Xhr` accepts is fine.
-- `:query-string` is a string with the query part of the URL.
+
+* `:method` is a keyword with the HTTP method to use. All valid HTTP methods are supported.
+* `:url` is the URL of the request
+* `:headers` is a map from strings to strings with the headers of the request.
+* `:body` is the body of the request. Everything that `goog.net.Xhr` accepts is fine.
+* `:query-string` is a string with the query part of the URL.
 
 ==== `send!`
 
@@ -88,7 +88,7 @@ with the `:timeout` keyword as a value.
 
 ==== HTTP method facade
 
-The `http.client` namespaces exposes `get`, `put`, `post`, `delete`, `head`, `options` and `trace`
+The `httpurr.client` namespaces exposes `get`, `put`, `post`, `delete`, `head`, `options` and `trace`
 methods with identical signatures.
 
 They are three arity functions:
@@ -108,11 +108,12 @@ They are three arity functions:
 === Responses
 
 Responses are maps with the following keys:
-- `:status` is the response status code.
-- `:headers` is a map from strings to strings with the headers of the response.
-- `:body` is the body of the response.
 
-== `http.status`
+* `:status` is the response status code.
+* `:headers` is a map from strings to strings with the headers of the response.
+* `:body` is the body of the response.
+
+== `httpurr.status`
 
 
 == Error handling
