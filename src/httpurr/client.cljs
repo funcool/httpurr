@@ -3,12 +3,8 @@
   performing requests as well as aliases for all the HTTP methods."
   (:require
    [promesa.core :as p]
-   [goog.events :refer [listen]])
-  (:import
-   [goog Uri]
-   [goog.net XhrIo]
-   [goog.net ErrorCode]
-   [goog.net EventType])
+   [httpurr.protocols :as proto])
+  (:import [goog Uri])
   (:refer-clojure :exclude [get]))
 
 (def keyword->method
@@ -21,15 +17,8 @@
    :delete  "DELETE"
    :trace   "TRACE"})
 
-(defn request->headers
-  [{:keys [headers]}]
-  (let [h (or headers {})]
-    (if (empty? h)
-      #js {}
-      (clj->js h))))
-
 (defn- perform!
-  [request {timeout :timeout :or {timeout 0} :as options}]
+  [client request options]
   (let [{:keys [method
                 url
                 headers
@@ -39,45 +28,22 @@
          uri (if query-string
                (.setQuery uri query-string)
                uri)
-         method (keyword->method method)
-         headers (request->headers request)]
-    (.send XhrIo
-           uri
-           nil
-           method
-           body
-           headers
-           timeout)))
+         request (-> (assoc request :url (.toString uri))
+                     (dissoc :query-string))]
+    (proto/send! client request options)))
 
-(defn xhr->response
-  [xhr]
-  {:pre [(.isSuccess xhr)]}
-  {:status  (.getStatus xhr)
-   :body    (.getResponse xhr)
-   :headers (js->clj (.getResponseHeaders xhr))})
-
-(defn xhr->error
-  [xhr]
-  {:pre [(not (.isSuccess xhr))]}
-  (condp = (.getLastErrorCode xhr)
-    ErrorCode.TIMEOUT    :timeout
-    ErrorCode.EXCEPTION  :exception
-    ErrorCode.HTTP_ERROR :http-error
-    ErrorCode.ABORT      :abort))
-
-(defn xhr->promise
-  "Given a XHR object return a promise that will be resolved
-  if there is a response and rejected on timeout, exceptions,
-  HTTP errors or aborts."
-  [xhr]
+(defn request->promise
+  "Given a object that implements `http.protocols.Request`,
+  return a promise that will be resolved if there is a
+  response and rejected on timeout, exceptions, HTTP errors
+  or abortions."
+  [request]
   (p/promise (fn [resolve reject]
-               (listen xhr
-                       EventType.COMPLETE
-                       (fn [ev]
-                         (let [xhr (.-target ev)]
-                           (if (.isSuccess xhr)
-                             (resolve (xhr->response xhr))
-                             (reject (xhr->error xhr)))))))))
+               (proto/listen! request
+                              (fn [resp]
+                                (if (proto/success? resp)
+                                  (resolve (proto/response resp))
+                                  (reject (proto/error resp))))))))
 
 (defn send!
   "Given a request map and maybe an options map, perform
@@ -90,15 +56,16 @@
   The available options are:
      - `:timeout`: a timeout for the request in miliseconds
   "
-  ([request]
-   (send! request {}))
-  ([request options]
-   (let [xhr (perform! request options)
-         p (xhr->promise xhr)]
+  ([client request]
+   (send! client request {}))
+  ([client request options]
+   (let [request (perform! client request options)
+         p (request->promise request)]
      (-> (.cancellable p)
          (p/catch js/Promise.CancellationError
                   (fn []
-                    (.abort xhr)
+                    (when (satisfies? proto/Abort request)
+                      (proto/abort! request))
                     (throw :abort)))))))
 
 (defn abort!
@@ -109,15 +76,15 @@
 
 ;; facade
 
-(defn- method
+(defn method
   [m]
   (fn
-    ([url]
-     (send! {:method m :url url}))
-    ([url req]
-     (send! (merge req {:method m :url url})))
-    ([url req opts]
-     (send! (merge req {:method m :url url}) opts))))
+    ([client url]
+     (send! client {:method m :url url}))
+    ([client url req]
+     (send! client (merge req {:method m :url url})))
+    ([client url req opts]
+     (send! client (merge req {:method m :url url}) opts))))
 
 (def head    (method :head))
 (def options (method :options))

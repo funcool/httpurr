@@ -1,6 +1,8 @@
 (ns httpurr.test.client-test
   (:require [cljs.test :as t]
             [httpurr.client :as http]
+            [httpurr.errors :as e]
+            [httpurr.xhr :refer [client]]
             [promesa.core :as p])
   (:import
    [goog.testing.net XhrIo]
@@ -26,6 +28,10 @@
   []
   (.cleanup XhrIo))
 
+(defn send!
+  [& args]
+  (apply http/send! client args))
+
 ;; tests
 
 (t/use-fixtures :each
@@ -37,7 +43,7 @@
              :url url
              :headers {}}]
 
-    (http/send! req)
+    (send! req)
 
     (let [{:keys [method
                   uri
@@ -55,7 +61,7 @@
              :url url
              :headers {}}]
 
-    (http/send! req)
+    (send! req)
 
     (let [{:keys [method
                   uri
@@ -73,7 +79,7 @@
              :url url
              :headers {}}]
 
-    (http/send! req)
+    (send! req)
 
     (let [{:keys [method
                   uri
@@ -88,7 +94,7 @@
              :url url
              :headers {"Content-Type" "application/json"}}]
 
-    (http/send! req)
+    (send! req)
 
     (let [{:keys [method
                   uri
@@ -103,7 +109,7 @@
              :url url
              :headers {"Content-Length" 42
                        "Content-Encoding" "gzip"}}]
-    (http/send! req)
+    (send! req)
 
     (let [{:keys [headers]} (last-request)]
       (t/is (= headers (:headers req))))))
@@ -117,7 +123,7 @@
              :headers {"Content-Length" 42
                        "Content-Encoding" "gzip"}
              :body content}]
-    (http/send! req)
+    (send! req)
     (let [{:keys [method
                   body
                   headers]} (last-request)]
@@ -132,7 +138,7 @@
         req {:method :get
              :url url
              :headers {}}
-        resp (http/send! req)]
+        resp (send! req)]
     (t/is (p/promise? resp))))
 
 (t/deftest send-returns-response-map-on-success
@@ -141,7 +147,7 @@
           req {:method :get
                :url url
                :headers {}}
-          resp (http/send! req)]
+          resp (send! req)]
       (p/then resp (fn [{:keys [status body headers]}]
                      (t/is (= 200 status))
                      (t/is (empty? body))
@@ -157,7 +163,7 @@
           req {:method :get
                :url url
                :headers {}}
-          resp (http/send! req)]
+          resp (send! req)]
       (p/then resp (fn [{:keys [status body headers]}]
                      (t/is (= status 200))
                      (t/is (= body "blablala"))
@@ -176,9 +182,9 @@
           req {:method :get
                :url url
                :headers {}}
-          resp (http/send! req {:timeout 1})]
+          resp (send! req {:timeout 1})]
       (p/catch resp (fn [err]
-                      (t/is (= err :timeout))
+                      (t/is (= err e/timeout))
                       (done))))))
 
 (t/deftest send-request-fails-when-timeout-forced
@@ -187,9 +193,9 @@
           req {:method :get
                :url url
                :headers {}}
-          resp (http/send! req)]
+          resp (send! req)]
       (p/catch resp (fn [err]
-                     (t/is (= err :timeout))
+                     (t/is (= err e/timeout))
                      (done))))
       (let [xhr (raw-last-request)]
         (.simulateTimeout xhr))))
@@ -200,8 +206,8 @@
           req {:method :get
                :url url
                :headers {}}
-          resp (http/send! req)]
+          resp (send! req)]
       (p/catch resp (fn [err]
-                      (t/is (= err :abort))
+                      (t/is (= err e/abort))
                       (done)))
       (http/abort! resp))))

@@ -9,7 +9,9 @@
 (defprotocol Request
   (listen! [_ cb]
     "Call the given `cb` function with a type that implements `Response`
-    when the request completes")
+    when the request completes"))
+
+(defprotocol Abort
   (abort! [_]
     "Abort a request."))
 
