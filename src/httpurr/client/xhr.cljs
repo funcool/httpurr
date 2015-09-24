@@ -1,4 +1,4 @@
-(ns httpurr.xhr
+(ns httpurr.client.xhr
   (:require
    [httpurr.client :as c]
    [httpurr.protocols :as p]

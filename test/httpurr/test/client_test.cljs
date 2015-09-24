@@ -2,7 +2,7 @@
   (:require [cljs.test :as t]
             [httpurr.client :as http]
             [httpurr.errors :as e]
-            [httpurr.xhr :refer [client]]
+            [httpurr.client.xhr :refer [client]]
             [promesa.core :as p])
   (:import
    [goog.testing.net XhrIo]

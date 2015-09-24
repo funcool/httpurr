@@ -37,6 +37,8 @@ are the ones made for `httpurr`.
 * Constants with every HTTP status code, sets of status codes and predicates for discerning response
   types.
 
+* Pluggable client implementation.
+
 * Intended as a infrastructure lib that sits at the bottom of your HTTP client API, I'll add
   things judiciously.
 
@@ -51,7 +53,7 @@ a promise-based API which no one offers.
 * **cljs-ajax**: Works in both Clojure and ClojureScript. Implicitly encodes and decodes data.
   Callback-based API.
 * **happy**: Encoding/decoding are explicit. Callback-based API. Works in both Clojure and
-  ClojureScript.
+  ClojureScript. Pluggable clients through global state mutation.
 
 All listed alternatives are licensed with EPL.
 
@@ -75,11 +77,15 @@ Requests are maps with the following keys:
 request and returns a promise that will be resolved if there is a response and rejected on
 timeout, exceptions, HTTP errors or aborts.
 
+Let's try to make a GET request using the XMLHttpRequest-based client that ships with `httpurr`:
+
 [source, clojure]
 ----
 (require '[httpurr.client :as http])
+(require '[httpurr.client.xhr :refer [client]])
 
-(http/send! {:method :get
+(http/send! client
+            {:method :get
              :url    "https://api.github.com/orgs/funcool"})
 ----
 
@@ -89,18 +95,19 @@ with the `:timeout` keyword as a value.
 ==== HTTP method facade
 
 The `httpurr.client` namespaces exposes `get`, `put`, `post`, `delete`, `head`, `options` and `trace`
-methods with identical signatures.
+methods with identical signatures. They all accept the client as the first argument.
 
-They are three arity functions:
+These functions have three arities:
 
-- With one argument is assumed to be the URL of the request.
-- Two arguments: like above and the second the request map without the `:url` key.
-- Three arguments: like above and the third argument is an option map passed to `send!`.
+- Two arguments the first is the client and the second is assumed to be the URL of the request.
+- Three arguments: like above and the third is the request map without the `:url` key.
+- Four arguments: like above and the fourth argument is an option map passed to `send!`.
 
+For convenience, client implementations provide aliases for the HTTP methods and the `send!` function:
 
 [source, clojure]
 ----
-(require '[httpurr.client :as http])
+(require '[httpurr.client.xhr :as http])
 
 (http/get "https://api.github.com/orgs/funcool")
 ----
@@ -123,3 +130,7 @@ Responses are maps with the following keys:
 === mlet
 
 === alet
+
+== Implementing your own client
+
+TODO: example with xhriopool

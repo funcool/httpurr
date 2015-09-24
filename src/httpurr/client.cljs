@@ -33,7 +33,7 @@
     (proto/send! client request options)))
 
 (defn request->promise
-  "Given a object that implements `http.protocols.Request`,
+  "Given a object that implements `httpurr.protocols.Request`,
   return a promise that will be resolved if there is a
   response and rejected on timeout, exceptions, HTTP errors
   or abortions."
