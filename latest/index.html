@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge"><![endif]-->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Asciidoctor 1.5.2">
+<meta name="author" content="Funcool">
+<title>httpurr</title>
+<style>
+.listingblock .pygments .hll { background-color: #ffffcc }
+.listingblock .pygments  { background: #f0f0f0; }
+.listingblock .pygments .tok-c { color: #60a0b0; font-style: italic } /* Comment */
+.listingblock .pygments .tok-err { border: 1px solid #FF0000 } /* Error */
+.listingblock .pygments .tok-k { color: #007020; font-weight: bold } /* Keyword */
+.listingblock .pygments .tok-o { color: #666666 } /* Operator */
+.listingblock .pygments .tok-cm { color: #60a0b0; font-style: italic } /* Comment.Multiline */
+.listingblock .pygments .tok-cp { color: #007020 } /* Comment.Preproc */
+.listingblock .pygments .tok-c1 { color: #60a0b0; font-style: italic } /* Comment.Single */
+.listingblock .pygments .tok-cs { color: #60a0b0; background-color: #fff0f0 } /* Comment.Special */
+.listingblock .pygments .tok-gd { color: #A00000 } /* Generic.Deleted */
+.listingblock .pygments .tok-ge { font-style: italic } /* Generic.Emph */
+.listingblock .pygments .tok-gr { color: #FF0000 } /* Generic.Error */
+.listingblock .pygments .tok-gh { color: #000080; font-weight: bold } /* Generic.Heading */
+.listingblock .pygments .tok-gi { color: #00A000 } /* Generic.Inserted */
+.listingblock .pygments .tok-go { color: #888888 } /* Generic.Output */
+.listingblock .pygments .tok-gp { color: #c65d09; font-weight: bold } /* Generic.Prompt */
+.listingblock .pygments .tok-gs { font-weight: bold } /* Generic.Strong */
+.listingblock .pygments .tok-gu { color: #800080; font-weight: bold } /* Generic.Subheading */
+.listingblock .pygments .tok-gt { color: #0044DD } /* Generic.Traceback */
+.listingblock .pygments .tok-kc { color: #007020; font-weight: bold } /* Keyword.Constant */
+.listingblock .pygments .tok-kd { color: #007020; font-weight: bold } /* Keyword.Declaration */
+.listingblock .pygments .tok-kn { color: #007020; font-weight: bold } /* Keyword.Namespace */
+.listingblock .pygments .tok-kp { color: #007020 } /* Keyword.Pseudo */
+.listingblock .pygments .tok-kr { color: #007020; font-weight: bold } /* Keyword.Reserved */
+.listingblock .pygments .tok-kt { color: #902000 } /* Keyword.Type */
+.listingblock .pygments .tok-m { color: #40a070 } /* Literal.Number */
+.listingblock .pygments .tok-s { color: #4070a0 } /* Literal.String */
+.listingblock .pygments .tok-na { color: #4070a0 } /* Name.Attribute */
+.listingblock .pygments .tok-nb { color: #007020 } /* Name.Builtin */
+.listingblock .pygments .tok-nc { color: #0e84b5; font-weight: bold } /* Name.Class */
+.listingblock .pygments .tok-no { color: #60add5 } /* Name.Constant */
+.listingblock .pygments .tok-nd { color: #555555; font-weight: bold } /* Name.Decorator */
+.listingblock .pygments .tok-ni { color: #d55537; font-weight: bold } /* Name.Entity */
+.listingblock .pygments .tok-ne { color: #007020 } /* Name.Exception */
+.listingblock .pygments .tok-nf { color: #06287e } /* Name.Function */
+.listingblock .pygments .tok-nl { color: #002070; font-weight: bold } /* Name.Label */
+.listingblock .pygments .tok-nn { color: #0e84b5; font-weight: bold } /* Name.Namespace */
+.listingblock .pygments .tok-nt { color: #062873; font-weight: bold } /* Name.Tag */
+.listingblock .pygments .tok-nv { color: #bb60d5 } /* Name.Variable */
+.listingblock .pygments .tok-ow { color: #007020; font-weight: bold } /* Operator.Word */
+.listingblock .pygments .tok-w { color: #bbbbbb } /* Text.Whitespace */
+.listingblock .pygments .tok-mb { color: #40a070 } /* Literal.Number.Bin */
+.listingblock .pygments .tok-mf { color: #40a070 } /* Literal.Number.Float */
+.listingblock .pygments .tok-mh { color: #40a070 } /* Literal.Number.Hex */
+.listingblock .pygments .tok-mi { color: #40a070 } /* Literal.Number.Integer */
+.listingblock .pygments .tok-mo { color: #40a070 } /* Literal.Number.Oct */
+.listingblock .pygments .tok-sb { color: #4070a0 } /* Literal.String.Backtick */
+.listingblock .pygments .tok-sc { color: #4070a0 } /* Literal.String.Char */
+.listingblock .pygments .tok-sd { color: #4070a0; font-style: italic } /* Literal.String.Doc */
+.listingblock .pygments .tok-s2 { color: #4070a0 } /* Literal.String.Double */
+.listingblock .pygments .tok-se { color: #4070a0; font-weight: bold } /* Literal.String.Escape */
+.listingblock .pygments .tok-sh { color: #4070a0 } /* Literal.String.Heredoc */
+.listingblock .pygments .tok-si { color: #70a0d0; font-style: italic } /* Literal.String.Interpol */
+.listingblock .pygments .tok-sx { color: #c65d09 } /* Literal.String.Other */
+.listingblock .pygments .tok-sr { color: #235388 } /* Literal.String.Regex */
+.listingblock .pygments .tok-s1 { color: #4070a0 } /* Literal.String.Single */
+.listingblock .pygments .tok-ss { color: #517918 } /* Literal.String.Symbol */
+.listingblock .pygments .tok-bp { color: #007020 } /* Name.Builtin.Pseudo */
+.listingblock .pygments .tok-vc { color: #bb60d5 } /* Name.Variable.Class */
+.listingblock .pygments .tok-vg { color: #bb60d5 } /* Name.Variable.Global */
+.listingblock .pygments .tok-vi { color: #bb60d5 } /* Name.Variable.Instance */
+.listingblock .pygments .tok-il { color: #40a070 } /* Literal.Number.Integer.Long */
+</style>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic|Liberation+Mono:400|Roboto+Slab:400,700"/>
+<link rel="stylesheet" href="https://www.niwi.nz/_assets/asciidoctor-styles/simple-red-titles/stylesheet.css"/>
+</head>
+<body class="article toc2 toc-left">
+<div id="header">
+<h1>httpurr</h1>
+<div class="details">
+<span id="author" class="author">Funcool</span><br>
+<span id="revdate">0.1.0</span>
+</div>
+<div id="toc" class="toc2">
+<div id="toctitle">Table of Contents</div>
+<ul class="sectlevel1">
+<li><a href="#why-another-library">Why another library?</a>
+<ul class="sectlevel2">
+<li><a href="#alternatives">Alternatives</a></li>
+</ul>
+</li>
+<li><a href="#code-httpurr-client-code"><code>httpurr.client</code></a>
+<ul class="sectlevel2">
+<li><a href="#requests">Requests</a></li>
+<li><a href="#responses">Responses</a></li>
+</ul>
+</li>
+<li><a href="#code-httpurr-status-code"><code>httpurr.status</code></a>
+<ul class="sectlevel2">
+<li><a href="#discerning-response-types">Discerning response types</a></li>
+<li><a href="#checking-status-codes">Checking status codes</a></li>
+</ul>
+</li>
+<li><a href="#error-handling">Error handling</a></li>
+<li><a href="#implementing-your-own-client">Implementing your own client</a></li>
+<li><a href="#developers-guide">Developers Guide</a>
+<ul class="sectlevel2">
+<li><a href="#contributing">Contributing</a></li>
+<li><a href="#get-the-code">Get the Code</a></li>
+<li><a href="#run-tests">Run tests</a></li>
+<li><a href="#license">License</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div id="content">
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>A ring-inspired, promise-returning, <strong>simple</strong> ClojureScript HTTP client.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="why-another-library"><a class="link" href="#why-another-library">Why another library?</a></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>There are plenty of HTTP client libraries available, each with its own design decisions. Here
+are the ones made for <code>httpurr</code>.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Promises are a natural fit for the request-response nature of HTTP. They contain either
+an eventual value (the response) or an error value. CSP channels lack first class errors
+and callbacks/errbacks are cumbersome to compose.
+<code>httpurr</code> uses <a href="https://github.com/funcool/promesa">promesa</a>, a wrapper around the
+performant Bluebird JS library which implements the Applicative and Monad protocols of
+<a href="https://github.com/funcool/cats">cats</a>. This means that you have core.async
+like syntax with <code>cats.core/mlet</code> and, if you want to maximize concurrency, applicative
+composition of promises with <code>cats.core/alet</code>.</p>
+</li>
+<li>
+<p>A data based API, requests and responses are just maps. This makes easy to create and
+transform requests piping various transformations together and the same is true for responses.</p>
+</li>
+<li>
+<p>No automatic encoding/decoding based on content type, it sits at a lower level. Is your
+responsibility to encode and decode data, <code>httpurr</code> just speaks HTTP.</p>
+</li>
+<li>
+<p>No automatic generation of query strings. There is no consensus on how to use query params
+for things like collection and don&#8217;t want to make the choice for you. <code>httpurr</code> uses <code>goog.net.Uri</code>
+internally so your URLs we&#8217;ll be correctly encoded.</p>
+</li>
+<li>
+<p>Constants with every HTTP status code, sets of status codes and predicates for discerning response
+types.</p>
+</li>
+<li>
+<p>Pluggable client implementation.</p>
+</li>
+<li>
+<p>Intended as a infrastructure lib that sits at the bottom of your HTTP client API, we&#8217;ll add
+things judiciously.</p>
+</li>
+</ul>
+</div>
+<div class="sect2">
+<h3 id="alternatives"><a class="link" href="#alternatives">Alternatives</a></h3>
+<div class="paragraph">
+<p>There are several alternatives, <code>httpurr</code> tries to steal the best of each of them while having
+a promise-based API which no one offers.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>cljs-http</strong>: Pretty popular and complete, uses CSP channels for responses. Implicitly
+encodes and decodes data. It has some features like helpers for JSONP and auth that I may
+eventually add to <code>httpurr</code>.</p>
+</li>
+<li>
+<p><strong>cljs-ajax</strong>: Works in both Clojure and ClojureScript. Implicitly encodes and decodes data.
+Callback-based API.</p>
+</li>
+<li>
+<p><strong>happy</strong>: Encoding/decoding are explicit. Callback-based API. Works in both Clojure and
+ClojureScript. Pluggable clients through global state mutation.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>All listed alternatives are licensed with EPL.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="code-httpurr-client-code"><a class="link" href="#code-httpurr-client-code"><code>httpurr.client</code></a></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p><code>httpurr.client</code> is the namespace containing the functions to perform HTTP requests.</p>
+</div>
+<div class="sect2">
+<h3 id="requests"><a class="link" href="#requests">Requests</a></h3>
+<div class="paragraph">
+<p>Requests are maps with the following keys:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>:method</code> is a keyword with the HTTP method to use. All valid HTTP methods are supported.</p>
+</li>
+<li>
+<p><code>:url</code> is the URL of the request</p>
+</li>
+<li>
+<p><code>:headers</code> is a map from strings to strings with the headers of the request.</p>
+</li>
+<li>
+<p><code>:body</code> is the body of the request. Everything that <code>goog.net.Xhr</code> accepts is fine.</p>
+</li>
+<li>
+<p><code>:query-string</code> is a string with the query part of the URL.</p>
+</li>
+</ul>
+</div>
+<div class="sect3">
+<h4 id="code-send-code"><a class="link" href="#code-send-code"><code>send!</code></a></h4>
+<div class="paragraph">
+<p><code>send!</code> is a function that, given a request map and optionally a map of options, performs the
+request and returns a promise that will be resolved if there is a response and rejected on
+timeout, exceptions, HTTP errors or aborts.</p>
+</div>
+<div class="paragraph">
+<p>Let&#8217;s try to make a GET request using the XMLHttpRequest-based client that ships with <code>httpurr</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="clojure"><span class="tok-p">(</span><span class="tok-nf">require</span> <span class="tok-o">&#39;</span><span class="tok-p">[</span><span class="tok-nv">httpurr.client</span> <span class="tok-ss">:as</span> <span class="tok-nv">http</span><span class="tok-p">])</span>
+<span class="tok-p">(</span><span class="tok-nf">require</span> <span class="tok-o">&#39;</span><span class="tok-p">[</span><span class="tok-nv">httpurr.client.xhr</span> <span class="tok-ss">:refer</span> <span class="tok-p">[</span><span class="tok-nv">client</span><span class="tok-p">]])</span>
+
+<span class="tok-p">(</span><span class="tok-nf">http/send!</span> <span class="tok-nv">client</span>
+            <span class="tok-p">{</span><span class="tok-ss">:method</span> <span class="tok-ss">:get</span>
+             <span class="tok-ss">:url</span>    <span class="tok-s">&quot;https://api.github.com/orgs/funcool&quot;</span><span class="tok-p">})</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The options map accepts a <code>:timeout</code>, in miliseconds, after which the promise will be rejected
+with the <code>:timeout</code> keyword as a value.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="http-method-facade"><a class="link" href="#http-method-facade">HTTP method facade</a></h4>
+<div class="paragraph">
+<p>The <code>httpurr.client</code> namespaces exposes <code>get</code>, <code>put</code>, <code>post</code>, <code>delete</code>, <code>head</code>, <code>options</code> and <code>trace</code>
+methods with identical signatures. They all accept the client as the first argument.</p>
+</div>
+<div class="paragraph">
+<p>These functions have three arities:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Two arguments the first is the client and the second is assumed to be the URL of the request.</p>
+</li>
+<li>
+<p>Three arguments: like above and the third is the request map without the <code>:url</code> key.</p>
+</li>
+<li>
+<p>Four arguments: like above and the fourth argument is an option map passed to <code>send!</code>.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>For convenience, client implementations provide aliases for the HTTP methods and the <code>send!</code> function:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="clojure"><span class="tok-p">(</span><span class="tok-nf">require</span> <span class="tok-o">&#39;</span><span class="tok-p">[</span><span class="tok-nv">httpurr.client.xhr</span> <span class="tok-ss">:as</span> <span class="tok-nv">http</span><span class="tok-p">])</span>
+
+<span class="tok-p">(</span><span class="tok-nf">http/get</span> <span class="tok-s">&quot;https://api.github.com/orgs/funcool&quot;</span><span class="tok-p">)</span></code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="responses"><a class="link" href="#responses">Responses</a></h3>
+<div class="paragraph">
+<p>Responses are maps with the following keys:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>:status</code> is the response status code.</p>
+</li>
+<li>
+<p><code>:headers</code> is a map from strings to strings with the headers of the response.</p>
+</li>
+<li>
+<p><code>:body</code> is the body of the response.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="code-httpurr-status-code"><a class="link" href="#code-httpurr-status-code"><code>httpurr.status</code></a></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The <code>httpurr.status</code> namespace contains constants for HTTP codes and predicates for discerning the types of
+responses. They can help you make decissions about how to translate responses to either resolved or rejected
+promises.</p>
+</div>
+<div class="sect2">
+<h3 id="discerning-response-types"><a class="link" href="#discerning-response-types">Discerning response types</a></h3>
+<div class="paragraph">
+<p>HTTP has 5 types of responses and <code>httpurr.status</code> provides predicates for checking wheter a response is of
+a certain type.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>For 1xx status codes the predicate is <code>informational?</code></p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="clojure"><span class="tok-p">(</span><span class="tok-nf">require</span> <span class="tok-o">&#39;</span><span class="tok-p">[</span><span class="tok-nv">httpurr.status</span> <span class="tok-ss">:as</span> <span class="tok-nv">s</span><span class="tok-p">])</span>
+
+<span class="tok-p">(</span><span class="tok-nf">s/informational?</span> <span class="tok-p">{</span><span class="tok-ss">:status</span> <span class="tok-nv">s/continue</span><span class="tok-p">})</span>
+<span class="tok-c1">;; =&gt; true</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>For 2xx status codes the predicate is <code>success?</code></p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="clojure"><span class="tok-p">(</span><span class="tok-nf">require</span> <span class="tok-o">&#39;</span><span class="tok-p">[</span><span class="tok-nv">httpurr.status</span> <span class="tok-ss">:as</span> <span class="tok-nv">s</span><span class="tok-p">])</span>
+
+<span class="tok-p">(</span><span class="tok-nf">s/success?</span> <span class="tok-p">{</span><span class="tok-ss">:status</span> <span class="tok-nv">s/ok</span><span class="tok-p">})</span>
+<span class="tok-c1">;; =&gt; true</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>For 3xx status codes the predicate is <code>redirection?</code></p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="clojure"><span class="tok-p">(</span><span class="tok-nf">require</span> <span class="tok-o">&#39;</span><span class="tok-p">[</span><span class="tok-nv">httpurr.status</span> <span class="tok-ss">:as</span> <span class="tok-nv">s</span><span class="tok-p">])</span>
+
+<span class="tok-p">(</span><span class="tok-nf">s/redirection?</span> <span class="tok-p">{</span><span class="tok-ss">:status</span> <span class="tok-nv">s/moved-permanently</span><span class="tok-p">})</span>
+<span class="tok-c1">;; =&gt; true</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>For 4xx status codes the predicate is <code>client-error?</code></p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="clojure"><span class="tok-p">(</span><span class="tok-nf">require</span> <span class="tok-o">&#39;</span><span class="tok-p">[</span><span class="tok-nv">httpurr.status</span> <span class="tok-ss">:as</span> <span class="tok-nv">s</span><span class="tok-p">])</span>
+
+<span class="tok-p">(</span><span class="tok-nf">s/client-error?</span> <span class="tok-p">{</span><span class="tok-ss">:status</span> <span class="tok-nv">s/not-found</span><span class="tok-p">})</span>
+<span class="tok-c1">;; =&gt; true</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>For 5xx status codes the predicate is <code>server-error?</code></p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="clojure"><span class="tok-p">(</span><span class="tok-nf">require</span> <span class="tok-o">&#39;</span><span class="tok-p">[</span><span class="tok-nv">httpurr.status</span> <span class="tok-ss">:as</span> <span class="tok-nv">s</span><span class="tok-p">])</span>
+
+<span class="tok-p">(</span><span class="tok-nf">s/server-error?</span> <span class="tok-p">{</span><span class="tok-ss">:status</span> <span class="tok-nv">s/internal-server-error</span><span class="tok-p">})</span>
+<span class="tok-c1">;; =&gt; true</span></code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="checking-status-codes"><a class="link" href="#checking-status-codes">Checking status codes</a></h3>
+<div class="paragraph">
+<p>If you need more granularity you can always check for status codes in your responses and transform
+the promise accordingly.</p>
+</div>
+<div class="paragraph">
+<p>Let&#8217;s say you&#8217;re building an API client and you want to perform GET requests for the URL of an entity
+that can return:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>200 OK status code if everything went well</p>
+</li>
+<li>
+<p>404 not found if the requested entity wasn&#8217;t found</p>
+</li>
+<li>
+<p>402 unauthorized when we don&#8217;t have permission to read the resource</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>We want to transform the promises by extracting the body of the 200 responses and, if we encounter a
+404 or 402, return a keyword denoting the type of error. Let&#8217;s give it a go:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="clojure"><span class="tok-p">(</span><span class="tok-nf">require</span> <span class="tok-o">&#39;</span><span class="tok-p">[</span><span class="tok-nv">httpurr.status</span> <span class="tok-ss">:as</span> <span class="tok-nv">s</span><span class="tok-p">])</span>
+<span class="tok-p">(</span><span class="tok-nf">require</span> <span class="tok-o">&#39;</span><span class="tok-p">[</span><span class="tok-nv">httpurr.client.xhr</span> <span class="tok-ss">:as</span> <span class="tok-nv">xhr</span><span class="tok-p">])</span>
+<span class="tok-p">(</span><span class="tok-nf">require</span> <span class="tok-o">&#39;</span><span class="tok-p">[</span><span class="tok-nv">promesa.core</span> <span class="tok-ss">:as</span> <span class="tok-nv">p</span><span class="tok-p">])</span>
+
+<span class="tok-p">(</span><span class="tok-kd">defn </span><span class="tok-nv">process-response</span>
+  <span class="tok-p">[</span><span class="tok-nv">response</span><span class="tok-p">]</span>
+  <span class="tok-p">(</span><span class="tok-nf">condp</span> <span class="tok-nb">= </span><span class="tok-p">(</span><span class="tok-ss">:status</span> <span class="tok-nv">response</span><span class="tok-p">)</span>
+    <span class="tok-nv">s/ok</span>           <span class="tok-p">(</span><span class="tok-nf">p/resolved</span> <span class="tok-p">(</span><span class="tok-ss">:body</span> <span class="tok-nv">response</span><span class="tok-p">))</span>
+    <span class="tok-nv">s/not-found</span>    <span class="tok-p">(</span><span class="tok-nf">p/rejected</span> <span class="tok-ss">:not-found</span><span class="tok-p">)</span>
+    <span class="tok-nv">s/unauthorized</span> <span class="tok-p">(</span><span class="tok-nf">p/rejected</span> <span class="tok-ss">:unauthorized</span><span class="tok-p">)))</span>
+
+<span class="tok-p">(</span><span class="tok-kd">defn </span><span class="tok-nv">id-&gt;url</span>
+  <span class="tok-p">[</span><span class="tok-nv">id</span><span class="tok-p">]</span>
+  <span class="tok-p">(</span><span class="tok-nb">str </span><span class="tok-s">&quot;my.api/entity/&quot;</span> <span class="tok-nv">id</span><span class="tok-p">))</span>
+
+<span class="tok-p">(</span><span class="tok-kd">defn </span><span class="tok-nv">entity</span> <span class="tok-p">[</span><span class="tok-nv">id</span><span class="tok-p">]</span>
+  <span class="tok-p">(</span><span class="tok-nf">p/then</span> <span class="tok-p">(</span><span class="tok-nf">xhr/get</span> <span class="tok-p">(</span><span class="tok-nf">id-&gt;url</span> <span class="tok-nv">id</span><span class="tok-p">))</span>
+          <span class="tok-nv">process-response</span><span class="tok-p">))</span></code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="error-handling"><a class="link" href="#error-handling">Error handling</a></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The <a href="http://funcool.github.io/cats/latest/">Promesa docs</a> explain all the possible combinators
+for working with promises. We&#8217;ve already used <code>then</code> for processing responses, let&#8217;s look at two
+other useful functions: <code>catch</code> and <code>branch</code>.</p>
+</div>
+<div class="paragraph">
+<p>If we want to attach an error handler to the promise we can use the <code>catch</code> function. Let&#8217;s rewrite
+our previous <code>entity</code> function for handling the error case. We&#8217;ll just log the error to the console,
+you may want to use a better error handling in your code.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="clojure"><span class="tok-p">(</span><span class="tok-kd">defn </span><span class="tok-nv">entity</span> <span class="tok-p">[</span><span class="tok-nv">id</span><span class="tok-p">]</span>
+  <span class="tok-p">(</span><span class="tok-nb">-&gt; </span><span class="tok-p">(</span><span class="tok-nf">p/then</span> <span class="tok-p">(</span><span class="tok-nf">xhr/get</span> <span class="tok-p">(</span><span class="tok-nf">id-&gt;url</span> <span class="tok-nv">id</span><span class="tok-p">))</span>
+              <span class="tok-nv">process-response</span><span class="tok-p">)</span>
+      <span class="tok-p">(</span><span class="tok-nf">p/catch</span> <span class="tok-p">(</span><span class="tok-k">fn </span><span class="tok-p">[</span><span class="tok-nv">err</span><span class="tok-p">]</span>
+                 <span class="tok-p">(</span><span class="tok-nf">.error</span> <span class="tok-nv">js/console</span> <span class="tok-nv">err</span><span class="tok-p">)))))</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>For cases when we want to attach both a success and error handler to a promise we can use the <code>branch</code>
+function:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="clojure"><span class="tok-p">(</span><span class="tok-kd">defn </span><span class="tok-nv">entity</span> <span class="tok-p">[</span><span class="tok-nv">id</span><span class="tok-p">]</span>
+  <span class="tok-p">(</span><span class="tok-nf">p/branch</span> <span class="tok-p">(</span><span class="tok-nf">xhr/get</span> <span class="tok-p">(</span><span class="tok-nf">id-&gt;url</span> <span class="tok-nv">id</span><span class="tok-p">))</span>
+            <span class="tok-nv">process-response</span>
+            <span class="tok-p">(</span><span class="tok-k">fn </span><span class="tok-p">[</span><span class="tok-nv">err</span><span class="tok-p">]</span>
+              <span class="tok-p">(</span><span class="tok-nf">.error</span> <span class="tok-nv">js/console</span> <span class="tok-nv">err</span><span class="tok-p">))))</span></code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="implementing-your-own-client"><a class="link" href="#implementing-your-own-client">Implementing your own client</a></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The functions in <code>httpurr.client</code> are based on abstractions defined as protocols in <code>httpurr.protocols</code> so
+you can implement our own clients.</p>
+</div>
+<div class="paragraph">
+<p>The following protocols are defined in <code>httpurr.protocols</code>:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>Client</code> is the protocol for a HTTP client</p>
+</li>
+<li>
+<p><code>Request</code> is the protocol for HTTP requests</p>
+</li>
+<li>
+<p><code>Abort</code> is an optional protocol for abortable HTTP requests</p>
+</li>
+<li>
+<p><code>Response</code> is the protocol for HTTP responses</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Take a look at the XHR client at <code>httpurr.client.xhr</code> for reference.</p>
+</div>
+<div class="paragraph">
+<p>Note that the requests passed to the clients have a escaped URL generated as their <code>:url</code> value, inferred
+from the <code>:url</code> and <code>:query-string</code> from the original requests before being passed to the protocol&#8217;s
+<code>send!</code> function.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="developers-guide"><a class="link" href="#developers-guide">Developers Guide</a></h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="contributing"><a class="link" href="#contributing">Contributing</a></h3>
+<div class="paragraph">
+<p>Unlike Clojure and other Clojure contrib libs, does not have many restrictions for
+contributions. Just open a issue or pull request.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="get-the-code"><a class="link" href="#get-the-code">Get the Code</a></h3>
+<div class="paragraph">
+<p><em>httpurr</em> is open source and can be found on
+<a href="https://github.com/funcool/httpurr">github</a>.</p>
+</div>
+<div class="paragraph">
+<p>You can clone the public repository with this command:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="text">git clone https://github.com/funcool/httpurr</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="run-tests"><a class="link" href="#run-tests">Run tests</a></h3>
+<div class="paragraph">
+<p>To run the tests execute the following:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="text">./scripts/build
+node out/tests.js</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You will need to have nodejs or iojs installed on your system.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="license"><a class="link" href="#license">License</a></h3>
+<div class="paragraph">
+<p><em>httpurr</em> is public domain.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>This is free and unencumbered software released into the public domain.
+
+Anyone is free to copy, modify, publish, use, compile, sell, or
+distribute this software, either in source code form or as a compiled
+binary, for any purpose, commercial or non-commercial, and by any
+means.
+
+In jurisdictions that recognize copyright laws, the author or authors
+of this software dedicate any and all copyright interest in the
+software to the public domain. We make this dedication for the benefit
+of the public at large and to the detriment of our heirs and
+successors. We intend this dedication to be an overt act of
+relinquishment in perpetuity of all present and future rights to this
+software under copyright law.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+OTHER DEALINGS IN THE SOFTWARE.
+
+For more information, please refer to &lt;http://unlicense.org/&gt;</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id="footer">
+<div id="footer-text">
+Last updated 2015-09-26 18:46:43 CEST
+</div>
+</div>
+</body>
+</html>
