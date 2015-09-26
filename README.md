@@ -2,8 +2,14 @@
 
 [![Travis Badge](https://img.shields.io/travis/funcool/httpurr/master.svg)](https://travis-ci.org/funcool/httpurr "Travis Badge")
 
-A ring-inspired, promise-returning, *simple* ClojureScript HTTP client.
+A ring-inspired, promise-returning, **simple** ClojureScript HTTP client.
 
-## Documentation
+[![Clojars Project](http://clojars.org/funcool/promesa/latest-version.svg)](http://clojars.org/funcool/promesa)
 
-Cooming soon.
+Documentation: https://funcool.github.io/httpurr/latest/
+
+## License
+
+This is free and unencumbered software released into the public domain.
+
+For more information, please refer to the [http://unlicense.org/](Unlicense website).
