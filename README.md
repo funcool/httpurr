@@ -4,7 +4,7 @@
 
 A ring-inspired, promise-returning, **simple** ClojureScript HTTP client.
 
-[![Clojars Project](http://clojars.org/funcool/promesa/latest-version.svg)](http://clojars.org/funcool/promesa)
+[![Clojars Project](http://clojars.org/funcool/httpurr/latest-version.svg)](http://clojars.org/funcool/httpurr)
 
 Documentation: https://funcool.github.io/httpurr/latest/
 
