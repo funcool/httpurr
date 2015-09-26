@@ -249,12 +249,84 @@ function:
               (.error js/console err))))
 ----
 
-== Composition
-
-=== mlet
-
-=== alet
 
 == Implementing your own client
 
-TODO: example with xhriopool
+The functions in `httpurr.client` are based on abstractions defined as protocols in `httpurr.protocols` so
+you can implement our own clients.
+
+The following protocols are defined in `httpurr.protocols`:
+
+* `Client` is the protocol for a HTTP client
+* `Request` is the protocol for HTTP requests
+* `Abort` is an optional protocol for abortable HTTP requests
+* `Response` is the protocol for HTTP responses
+
+Take a look at the XHR client at `httpurr.client.xhr` for reference.
+
+Note that the requests passed to the clients have a escaped URL generated as their `:url` value, inferred
+from the `:url` and `:query-string` from the original requests before being passed to the protocol's
+`send!` function.
+
+== Developers Guide
+
+=== Contributing
+
+Unlike Clojure and other Clojure contrib libs, does not have many restrictions for
+contributions. Just open a issue or pull request.
+
+=== Get the Code
+
+_httpurr_ is open source and can be found on
+link:https://github.com/funcool/httpurr[github].
+
+You can clone the public repository with this command:
+
+[source,text]
+----
+git clone https://github.com/funcool/httpurr
+----
+
+=== Run tests
+
+To run the tests execute the following:
+
+[source, text]
+----
+./scripts/build
+node out/tests.js
+----
+
+You will need to have nodejs or iojs installed on your system.
+
+
+=== License
+
+_httpurr_ is public domain.
+
+----
+This is free and unencumbered software released into the public domain.
+
+Anyone is free to copy, modify, publish, use, compile, sell, or
+distribute this software, either in source code form or as a compiled
+binary, for any purpose, commercial or non-commercial, and by any
+means.
+
+In jurisdictions that recognize copyright laws, the author or authors
+of this software dedicate any and all copyright interest in the
+software to the public domain. We make this dedication for the benefit
+of the public at large and to the detriment of our heirs and
+successors. We intend this dedication to be an overt act of
+relinquishment in perpetuity of all present and future rights to this
+software under copyright law.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+OTHER DEALINGS IN THE SOFTWARE.
+
+For more information, please refer to <http://unlicense.org/>
+----
