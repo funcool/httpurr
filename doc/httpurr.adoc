@@ -211,7 +211,7 @@ We want to transform the promises by extracting the body of the 200 responses an
 
 (defn id->url
   [id]
-  (str "my.api/entity" id))
+  (str "my.api/entity/" id))
 
 (defn entity [id]
   (p/then (xhr/get (id->url id))
