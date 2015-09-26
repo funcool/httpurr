@@ -220,6 +220,35 @@ We want to transform the promises by extracting the body of the 200 responses an
 
 == Error handling
 
+The link:http://funcool.github.io/cats/latest/[Promesa docs] explain all the possible combinators
+for working with promises. We've already used `then` for processing responses, let's look at two
+other useful functions: `catch` and `branch`.
+
+If we want to attach an error handler to the promise we can use the `catch` function. Let's rewrite
+our previous `entity` function for handling the error case. We'll just log the error to the console,
+you may want to use a better error handling in your code.
+
+[source, clojure]
+----
+(defn entity [id]
+  (-> (p/then (xhr/get (id->url id))
+              process-response)
+      (p/catch (fn [err]
+                 (.error js/console err)))))
+----
+
+For cases when we want to attach both a success and error handler to a promise we can use the `branch`
+function:
+
+[source, clojure]
+----
+(defn entity [id]
+  (p/branch (xhr/get (id->url id))
+            process-response
+            (fn [err]
+              (.error js/console err))))
+----
+
 == Composition
 
 === mlet
