@@ -122,10 +122,105 @@ Responses are maps with the following keys:
 
 == `httpurr.status`
 
+The `httpurr.status` namespace contains constants for HTTP codes and predicates for discerning the types of
+responses. They can help you make decissions about how to translate responses to either resolved or rejected
+promises.
+
+=== Discerning response types
+
+HTTP has 5 types of responses and `httpurr.status` provides predicates for checking wheter a response is of
+a certain type.
+
+* For 1xx status codes the predicate is `informational?`
+
+[source, clojure]
+----
+(require '[httpurr.status :as s])
+
+(s/informational? {:status s/continue})
+;; => true
+----
+
+* For 2xx status codes the predicate is `success?`
+
+[source, clojure]
+----
+(require '[httpurr.status :as s])
+
+(s/success? {:status s/ok})
+;; => true
+----
+
+* For 3xx status codes the predicate is `redirection?`
+
+[source, clojure]
+----
+(require '[httpurr.status :as s])
+
+(s/redirection? {:status s/moved-permanently})
+;; => true
+----
+
+* For 4xx status codes the predicate is `client-error?`
+
+[source, clojure]
+----
+(require '[httpurr.status :as s])
+
+(s/client-error? {:status s/not-found})
+;; => true
+----
+
+* For 5xx status codes the predicate is `server-error?`
+
+[source, clojure]
+----
+(require '[httpurr.status :as s])
+
+(s/server-error? {:status s/internal-server-error})
+;; => true
+----
+
+=== Checking status codes
+
+If you need more granularity you can always check for status codes in your responses and transform
+the promise accordingly.
+
+Let's say you're building an API client and you want to perform GET requests for the URL of an entity
+that can return:
+
+* 200 OK status code if everything went well
+* 404 not found if the requested entity wasn't found
+* 402 unauthorized when we don't have permission to read the resource
+
+We want to transform the promises by extracting the body of the 200 responses and, if we encounter a
+404 or 402, return a keyword denoting the type of error. Let's give it a go:
+
+[source, clojure]
+----
+(require '[httpurr.status :as s])
+(require '[httpurr.client.xhr :as xhr])
+(require '[promesa.core :as p])
+
+(defn process-response
+  [response]
+  (condp = (:status response)
+    s/ok           (p/resolved (:body response))
+    s/not-found    (p/rejected :not-found)
+    s/unauthorized (p/rejected :unauthorized)))
+
+(defn id->url
+  [id]
+  (str "my.api/entity" id))
+
+(defn entity [id]
+  (p/then (xhr/get (id->url id))
+          process-response))
+----
 
 == Error handling
 
-== Composing
+== Composition
 
 === mlet
 
