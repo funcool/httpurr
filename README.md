@@ -12,4 +12,4 @@ Documentation: https://funcool.github.io/httpurr/latest/
 
 This is free and unencumbered software released into the public domain.
 
-For more information, please refer to the [http://unlicense.org/](Unlicense website).
+For more information, please refer to the [Unlicense website](http://unlicense.org/).
