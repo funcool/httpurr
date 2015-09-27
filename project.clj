@@ -1,4 +1,4 @@
-(defproject httpurr "0.1.0-SNAPSHOT"
+(defproject funcool/httpurr "0.1.0-SNAPSHOT"
   :description ""
   :url "http://funcool.github.io/httpurr"
   :license {:name ""
