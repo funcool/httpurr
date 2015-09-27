@@ -33,7 +33,7 @@ are the ones made for `httpurr`.
 
 * No automatic generation of query strings. There is no consensus on how to use query params
   for things like collection and don't want to make the choice for you. `httpurr` uses `goog.net.Uri`
-  internally so your URLs we'll be correctly encoded.
+  internally so your URLs will be correctly encoded.
 
 * Constants with every HTTP status code, sets of status codes and predicates for discerning response
   types.
