@@ -270,6 +270,47 @@ Note that the requests passed to the clients have a escaped URL generated as the
 from the `:url` and `:query-string` from the original requests before being passed to the protocol's
 `send!` function.
 
+== Examples
+
+=== Caches?
+
+=== Redirections?
+
+=== Basic Auth?
+
+=== Sending form data
+
+For sending form data you need to send the `FormData` instance as the body of the request. Let's send
+a form to the httbin.org site and confirm that the form is sent correctly. 
+
+[source, clojure]
+----
+(require '[httpurr.client.xhr :as xhr])
+
+(def fd (js/FormData.))
+(.append fd "foo" "bar")
+(.append fd "baz" "foo")
+
+(defn parse-json-body
+  [{:keys [body}]
+  (js/JSON.parse body))
+
+(defn clj-body
+  [response]
+  (js->clj (parse-json-body response)))
+
+(def req
+  (http/post "http://httbin.org/post" {:body fd}))
+
+(p/then req
+        (fn [response]
+          (let [body (clj-body response)]
+            (println :form (get body "form"))
+            (println :content-type (get-in body ["headers" "Content-Type"])))))
+;; :form {baz foo, foo bar}
+;; :content-type multipart/form-data; boundary=----WebKitFormBoundaryg4VACYY9tWU91kvn
+----
+
 == Developers Guide
 
 === Contributing
