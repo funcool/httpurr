@@ -1,4 +1,5 @@
 (ns httpurr.client.xhr
+  (:refer-clojure :exclude [get])
   (:require
    [httpurr.client :as c]
    [httpurr.protocols :as p]
