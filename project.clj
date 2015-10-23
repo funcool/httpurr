@@ -1,5 +1,5 @@
-(defproject funcool/httpurr "0.1.0"
-  :description ""
+(defproject funcool/httpurr "0.1.1"
+  :description "A simple and non obstructive http client for ClojureScript."
   :url "http://funcool.github.io/httpurr"
   :license {:name "Public Domain"
             :url "http://unlicense.org"}
