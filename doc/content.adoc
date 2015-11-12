@@ -38,7 +38,8 @@ are the ones made for `httpurr`.
 * Constants with every HTTP status code, sets of status codes and predicates for discerning response
   types.
 
-* Pluggable client implementation.
+* Pluggable client implementation. Currently `httpurr` ships with an Xhr-based client for the
+  browser and a node client.
 
 * Intended as a infrastructure lib that sits at the bottom of your HTTP client API, we'll add
   things judiciously.
