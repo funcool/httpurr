@@ -104,6 +104,13 @@
 </li>
 <li><a href="#error-handling">Error handling</a></li>
 <li><a href="#implementing-your-own-client">Implementing your own client</a></li>
+<li><a href="#examples">Examples</a>
+<ul class="sectlevel2">
+<li><a href="#encoding-decoding">Encoding/Decoding</a></li>
+<li><a href="#auth">Auth</a></li>
+<li><a href="#sending-form-data">Sending form data</a></li>
+</ul>
+</li>
 <li><a href="#developers-guide">Developers Guide</a>
 <ul class="sectlevel2">
 <li><a href="#contributing">Contributing</a></li>
@@ -153,14 +160,15 @@ responsibility to encode and decode data, <code>httpurr</code> just speaks HTTP.
 <li>
 <p>No automatic generation of query strings. There is no consensus on how to use query params
 for things like collection and don&#8217;t want to make the choice for you. <code>httpurr</code> uses <code>goog.net.Uri</code>
-internally so your URLs we&#8217;ll be correctly encoded.</p>
+internally so your URLs will be correctly encoded.</p>
 </li>
 <li>
 <p>Constants with every HTTP status code, sets of status codes and predicates for discerning response
 types.</p>
 </li>
 <li>
-<p>Pluggable client implementation.</p>
+<p>Pluggable client implementation. Currently <code>httpurr</code> ships with an Xhr-based client for the
+browser and a node client.</p>
 </li>
 <li>
 <p>Intended as a infrastructure lib that sits at the bottom of your HTTP client API, we&#8217;ll add
@@ -523,6 +531,168 @@ from the <code>:url</code> and <code>:query-string</code> from the original requ
 </div>
 </div>
 <div class="sect1">
+<h2 id="examples"><a class="link" href="#examples">Examples</a></h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="encoding-decoding"><a class="link" href="#encoding-decoding">Encoding/Decoding</a></h3>
+<div class="paragraph">
+<p>Since requests and responses are plain maps, we can write simple encoding/decoding function
+and modify request and responses appropiately. For example, let&#8217;s write a decoder function
+that converts JSON payloads to ClojureScript data structures:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="clojure"><span class="tok-p">(</span><span class="tok-nf">require</span> <span class="tok-o">&#39;</span><span class="tok-p">[</span><span class="tok-nv">httpurr.client.node</span> <span class="tok-ss">:as</span> <span class="tok-nv">node</span><span class="tok-p">])</span>
+<span class="tok-p">(</span><span class="tok-nf">require</span> <span class="tok-o">&#39;</span><span class="tok-p">[</span><span class="tok-nv">promesa.core</span> <span class="tok-ss">:as</span> <span class="tok-nv">p</span><span class="tok-p">])</span>
+
+<span class="tok-p">(</span><span class="tok-kd">defn </span><span class="tok-nv">decode</span>
+  <span class="tok-p">[</span><span class="tok-nv">response</span><span class="tok-p">]</span>
+  <span class="tok-p">(</span><span class="tok-nf">update</span> <span class="tok-nv">response</span> <span class="tok-ss">:body</span> <span class="tok-o">#</span><span class="tok-p">(</span><span class="tok-nf">js-&gt;clj</span> <span class="tok-p">(</span><span class="tok-nf">js/JSON.parse</span> <span class="tok-nv">%</span><span class="tok-p">))))</span>
+
+<span class="tok-p">(</span><span class="tok-kd">defn </span><span class="tok-nv">get!</span>
+  <span class="tok-p">[</span><span class="tok-nv">url</span><span class="tok-p">]</span>
+  <span class="tok-p">(</span><span class="tok-nf">p/then</span> <span class="tok-p">(</span><span class="tok-nf">node/get</span> <span class="tok-nv">url</span><span class="tok-p">)</span> <span class="tok-nv">decode</span><span class="tok-p">))</span>
+
+<span class="tok-p">(</span><span class="tok-nf">p/then</span> <span class="tok-p">(</span><span class="tok-nf">get!</span> <span class="tok-s">&quot;http://httpbin.org/get&quot;</span><span class="tok-p">)</span>
+         <span class="tok-p">(</span><span class="tok-k">fn </span><span class="tok-p">[</span><span class="tok-nv">response</span><span class="tok-p">]</span>
+           <span class="tok-p">(</span><span class="tok-nf">cljs.pprint/pprint</span> <span class="tok-nv">response</span><span class="tok-p">)))</span>
+<span class="tok-c1">;; {:status 200,</span>
+<span class="tok-c1">;;  :body</span>
+<span class="tok-c1">;;  {&quot;args&quot; {},</span>
+<span class="tok-c1">;;   &quot;headers&quot; {&quot;Host&quot; &quot;httpbin.org&quot;},</span>
+<span class="tok-c1">;;   &quot;origin&quot; &quot;188.x.x.x&quot;,</span>
+<span class="tok-c1">;;   &quot;url&quot; &quot;http://httpbin.org/get&quot;},</span>
+<span class="tok-c1">;;  :headers</span>
+<span class="tok-c1">;;  {&quot;Server&quot; &quot;nginx&quot;,</span>
+<span class="tok-c1">;;   &quot;Date&quot; &quot;Thu, 12 Nov 2015 17:27:50 GMT&quot;,</span>
+<span class="tok-c1">;;   &quot;Content-Type&quot; &quot;application/json&quot;,</span>
+<span class="tok-c1">;;   &quot;Content-Length&quot; &quot;130&quot;,</span>
+<span class="tok-c1">;;   &quot;Connection&quot; &quot;close&quot;,</span>
+<span class="tok-c1">;;   &quot;Access-Control-Allow-Origin&quot; &quot;*&quot;,</span>
+<span class="tok-c1">;;   &quot;Access-Control-Allow-Credentials&quot; &quot;true&quot;}}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Encoding can be achieved similarly applying the map transforming function to requests before sending them:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="clojure"><span class="tok-p">(</span><span class="tok-kd">defn </span><span class="tok-nv">encode</span>
+  <span class="tok-p">[</span><span class="tok-nv">request</span><span class="tok-p">]</span>
+  <span class="tok-p">(</span><span class="tok-nf">update</span> <span class="tok-nv">request</span> <span class="tok-ss">:body</span> <span class="tok-o">#</span><span class="tok-p">(</span><span class="tok-nf">js/JSON.stringify</span> <span class="tok-p">(</span><span class="tok-nf">clj-&gt;js</span> <span class="tok-nv">%</span><span class="tok-p">))))</span>
+
+<span class="tok-p">(</span><span class="tok-kd">defn </span><span class="tok-nv">post!</span>
+  <span class="tok-p">[</span><span class="tok-nv">url</span> <span class="tok-nv">req</span><span class="tok-p">]</span>
+  <span class="tok-p">(</span><span class="tok-nf">p/then</span> <span class="tok-p">(</span><span class="tok-nf">node/post</span> <span class="tok-nv">url</span> <span class="tok-p">(</span><span class="tok-nf">encode</span> <span class="tok-nv">req</span><span class="tok-p">))</span> <span class="tok-nv">decode</span><span class="tok-p">))</span>
+
+<span class="tok-p">(</span><span class="tok-nf">p/then</span> <span class="tok-p">(</span><span class="tok-nf">post!</span> <span class="tok-s">&quot;http://httpbin.org/post&quot;</span> <span class="tok-p">{</span><span class="tok-ss">:body</span> <span class="tok-p">{</span><span class="tok-ss">:foo</span> <span class="tok-ss">:bar</span><span class="tok-p">}})</span>
+         <span class="tok-p">(</span><span class="tok-k">fn </span><span class="tok-p">[</span><span class="tok-nv">response</span><span class="tok-p">]</span>
+           <span class="tok-p">(</span><span class="tok-nf">cljs.pprint/pprint</span> <span class="tok-nv">response</span><span class="tok-p">)))</span>
+<span class="tok-c1">;; {:status 200,</span>
+<span class="tok-c1">;;  :body</span>
+<span class="tok-c1">;;  {&quot;args&quot; {},</span>
+<span class="tok-c1">;;   &quot;data&quot; &quot;{\&quot;foo\&quot;:\&quot;bar\&quot;}&quot;,</span>
+<span class="tok-c1">;;   &quot;files&quot; {},</span>
+<span class="tok-c1">;;   &quot;form&quot; {},</span>
+<span class="tok-c1">;;   &quot;headers&quot; {&quot;Content-Length&quot; &quot;13&quot;, &quot;Host&quot; &quot;httpbin.org&quot;},</span>
+<span class="tok-c1">;;   &quot;json&quot; {&quot;foo&quot; &quot;bar&quot;},</span>
+<span class="tok-c1">;;   &quot;origin&quot; &quot;188.x.x.x&quot;,</span>
+<span class="tok-c1">;;   &quot;url&quot; &quot;http://httpbin.org/post&quot;},</span>
+<span class="tok-c1">;;  :headers</span>
+<span class="tok-c1">;;  {&quot;Server&quot; &quot;nginx&quot;,</span>
+<span class="tok-c1">;;   &quot;Date&quot; &quot;Thu, 12 Nov 2015 17:33:59 GMT&quot;,</span>
+<span class="tok-c1">;;   &quot;Content-Type&quot; &quot;application/json&quot;,</span>
+<span class="tok-c1">;;   &quot;Content-Length&quot; &quot;258&quot;,</span>
+<span class="tok-c1">;;   &quot;Connection&quot; &quot;close&quot;,</span>
+<span class="tok-c1">;;   &quot;Access-Control-Allow-Origin&quot; &quot;*&quot;,</span>
+<span class="tok-c1">;;   &quot;Access-Control-Allow-Credentials&quot; &quot;true&quot;}}</span></code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="auth"><a class="link" href="#auth">Auth</a></h3>
+<div class="paragraph">
+<p>The <code>httpur.auth</code> namespace contains the <code>basic</code> function for basic authentication. It
+accepts a realm, user and a password and returns a function that can be applied to a request
+for adding the basic auth headers:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="clojure"><span class="tok-p">(</span><span class="tok-nf">require</span> <span class="tok-o">&#39;</span><span class="tok-p">[</span><span class="tok-nv">httpurr.client.node</span> <span class="tok-ss">:as</span> <span class="tok-nv">node</span><span class="tok-p">])</span>
+<span class="tok-p">(</span><span class="tok-nf">require</span> <span class="tok-o">&#39;</span><span class="tok-p">[</span><span class="tok-nv">promesa.core</span> <span class="tok-ss">:as</span> <span class="tok-nv">p</span><span class="tok-p">])</span>
+<span class="tok-p">(</span><span class="tok-nf">require</span> <span class="tok-o">&#39;</span><span class="tok-p">[</span><span class="tok-nv">httpurr.auth</span> <span class="tok-ss">:as</span> <span class="tok-nv">auth</span><span class="tok-p">])</span>
+
+<span class="tok-p">(</span><span class="tok-k">def </span><span class="tok-nv">credentials</span> <span class="tok-p">(</span><span class="tok-nf">auth/basic</span> <span class="tok-s">&quot;Fake Realm&quot;</span> <span class="tok-s">&quot;Ada&quot;</span> <span class="tok-s">&quot;iinventedprogramming&quot;</span><span class="tok-p">))</span>
+
+<span class="tok-p">(</span><span class="tok-kd">defn </span><span class="tok-nv">get!</span>
+  <span class="tok-p">([</span><span class="tok-nv">url</span><span class="tok-p">]</span>
+   <span class="tok-p">(</span><span class="tok-nf">get!</span> <span class="tok-nv">url</span> <span class="tok-p">{}))</span>
+  <span class="tok-p">([</span><span class="tok-nv">url</span> <span class="tok-nv">request</span><span class="tok-p">]</span>
+   <span class="tok-p">(</span><span class="tok-nf">node/get</span> <span class="tok-nv">url</span> <span class="tok-p">(</span><span class="tok-nf">credentials</span> <span class="tok-nv">request</span><span class="tok-p">))))</span>
+
+<span class="tok-p">(</span><span class="tok-nf">p/then</span> <span class="tok-p">(</span><span class="tok-nf">get!</span> <span class="tok-s">&quot;http://httpbin.org/basic-auth/Ada/iinventedprogramming&quot;</span><span class="tok-p">)</span>
+        <span class="tok-p">(</span><span class="tok-k">fn </span><span class="tok-p">[</span><span class="tok-nv">response</span><span class="tok-p">]</span>
+          <span class="tok-p">(</span><span class="tok-nf">cljs.pprint/pprint</span> <span class="tok-nv">response</span><span class="tok-p">)))</span>
+<span class="tok-c1">;; {:status 200, :body #object[Buffer {</span>
+<span class="tok-c1">;;   &quot;authenticated&quot;: true,</span>
+<span class="tok-c1">;;   &quot;user&quot;: &quot;Ada&quot;</span>
+<span class="tok-c1">;; }</span>
+<span class="tok-c1">;; ],</span>
+<span class="tok-c1">;;  :headers</span>
+<span class="tok-c1">;;  {&quot;Server&quot; &quot;nginx&quot;,</span>
+<span class="tok-c1">;;   &quot;Date&quot; &quot;Thu, 12 Nov 2015 18:15:51 GMT&quot;,</span>
+<span class="tok-c1">;;   &quot;Content-Type&quot; &quot;application/json&quot;,</span>
+<span class="tok-c1">;;   &quot;Content-Length&quot; &quot;46&quot;,</span>
+<span class="tok-c1">;;   &quot;Connection&quot; &quot;close&quot;,</span>
+<span class="tok-c1">;;   &quot;Access-Control-Allow-Origin&quot; &quot;*&quot;,</span>
+<span class="tok-c1">;;   &quot;Access-Control-Allow-Credentials&quot; &quot;true&quot;}}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>A similar approach can be followed for implementing other authentication schemes.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="sending-form-data"><a class="link" href="#sending-form-data">Sending form data</a></h3>
+<div class="sect3">
+<h4 id="browser"><a class="link" href="#browser">Browser</a></h4>
+<div class="paragraph">
+<p>For sending form data you need to send the <code>FormData</code> instance as the body of the request. Let&#8217;s send
+a form to the httbin.org site and confirm that the form is sent correctly.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="clojure"><span class="tok-p">(</span><span class="tok-nf">require</span> <span class="tok-o">&#39;</span><span class="tok-p">[</span><span class="tok-nv">httpurr.client.xhr</span> <span class="tok-ss">:as</span> <span class="tok-nv">xhr</span><span class="tok-p">])</span>
+
+<span class="tok-p">(</span><span class="tok-k">def </span><span class="tok-nv">fd</span> <span class="tok-p">(</span><span class="tok-nf">js/FormData.</span><span class="tok-p">))</span>
+<span class="tok-p">(</span><span class="tok-nf">.append</span> <span class="tok-nv">fd</span> <span class="tok-s">&quot;foo&quot;</span> <span class="tok-s">&quot;bar&quot;</span><span class="tok-p">)</span>
+<span class="tok-p">(</span><span class="tok-nf">.append</span> <span class="tok-nv">fd</span> <span class="tok-s">&quot;baz&quot;</span> <span class="tok-s">&quot;foo&quot;</span><span class="tok-p">)</span>
+
+<span class="tok-p">(</span><span class="tok-kd">defn </span><span class="tok-nv">parse-json-body</span>
+  <span class="tok-p">[{</span><span class="tok-ss">:keys</span> <span class="tok-p">[</span><span class="tok-nv">body</span><span class="tok-p">}]</span>
+  <span class="tok-p">(</span><span class="tok-nf">js/JSON.parse</span> <span class="tok-nv">body</span><span class="tok-p">))</span>
+
+<span class="tok-p">(</span><span class="tok-kd">defn </span><span class="tok-nv">clj-body</span>
+  <span class="tok-p">[</span><span class="tok-nv">response</span><span class="tok-p">]</span>
+  <span class="tok-p">(</span><span class="tok-nf">js-&gt;clj</span> <span class="tok-p">(</span><span class="tok-nf">parse-json-body</span> <span class="tok-nv">response</span><span class="tok-p">)))</span>
+
+<span class="tok-p">(</span><span class="tok-k">def </span><span class="tok-nv">req</span>
+  <span class="tok-p">(</span><span class="tok-nf">http/post</span> <span class="tok-s">&quot;http://httbin.org/post&quot;</span> <span class="tok-p">{</span><span class="tok-ss">:body</span> <span class="tok-nv">fd</span><span class="tok-p">}))</span>
+
+<span class="tok-p">(</span><span class="tok-nf">p/then</span> <span class="tok-nv">req</span>
+        <span class="tok-p">(</span><span class="tok-k">fn </span><span class="tok-p">[</span><span class="tok-nv">response</span><span class="tok-p">]</span>
+          <span class="tok-p">(</span><span class="tok-k">let </span><span class="tok-p">[</span><span class="tok-nv">body</span> <span class="tok-p">(</span><span class="tok-nf">clj-body</span> <span class="tok-nv">response</span><span class="tok-p">)]</span>
+            <span class="tok-p">(</span><span class="tok-nb">println </span><span class="tok-ss">:form</span> <span class="tok-p">(</span><span class="tok-nb">get </span><span class="tok-nv">body</span> <span class="tok-s">&quot;form&quot;</span><span class="tok-p">))</span>
+            <span class="tok-p">(</span><span class="tok-nb">println </span><span class="tok-ss">:content-type</span> <span class="tok-p">(</span><span class="tok-nf">get-in</span> <span class="tok-nv">body</span> <span class="tok-p">[</span><span class="tok-s">&quot;headers&quot;</span> <span class="tok-s">&quot;Content-Type&quot;</span><span class="tok-p">])))))</span>
+<span class="tok-c1">;; :form {baz foo, foo bar}</span>
+<span class="tok-c1">;; :content-type multipart/form-data; boundary=----WebKitFormBoundaryg4VACYY9tWU91kvn</span></code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
 <h2 id="developers-guide"><a class="link" href="#developers-guide">Developers Guide</a></h2>
 <div class="sectionbody">
 <div class="sect2">
@@ -601,7 +771,7 @@ For more information, please refer to &lt;http://unlicense.org/&gt;</pre>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2015-09-26 18:46:43 CEST
+Last updated 2015-11-12 19:36:31 CET
 </div>
 </div>
 </body>
