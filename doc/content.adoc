@@ -272,6 +272,79 @@ from the `:url` and `:query-string` from the original requests before being pass
 
 == Examples
 
+=== Encoding/Decoding
+
+Since requests and responses are plain maps, we can write simple encoding/decoding function
+and modify request and responses appropiately. For example, let's write a decoder function
+that converts JSON payloads to ClojureScript data structures:
+
+[source, clojure]
+----
+(require '[httpurr.client.node :as node])
+(require '[promesa.core :as p])
+
+(defn decode
+  [response]
+  (update response :body #(js->clj (js/JSON.parse %))))
+
+(defn get!
+  [url]
+  (p/then (node/get url) decode))
+
+(p/then (get! "http://httpbin.org/get")
+         (fn [response]
+           (cljs.pprint/pprint response)))
+;; {:status 200,
+;;  :body
+;;  {"args" {},
+;;   "headers" {"Host" "httpbin.org"},
+;;   "origin" "188.x.x.x",
+;;   "url" "http://httpbin.org/get"},
+;;  :headers
+;;  {"Server" "nginx",
+;;   "Date" "Thu, 12 Nov 2015 17:27:50 GMT",
+;;   "Content-Type" "application/json",
+;;   "Content-Length" "130",
+;;   "Connection" "close",
+;;   "Access-Control-Allow-Origin" "*",
+;;   "Access-Control-Allow-Credentials" "true"}}
+----
+
+Encoding can be achieved similarly applying the map transforming function to requests before sending them:
+
+[source, clojure]
+----
+(defn encode
+  [request]
+  (update request :body #(js/JSON.stringify (clj->js %))))
+
+(defn post!
+  [url req]
+  (p/then (node/post url (encode req)) decode))
+
+(p/then (post! "http://httpbin.org/post" {:body {:foo :bar}})
+         (fn [response]
+           (cljs.pprint/pprint response)))
+;; {:status 200,
+;;  :body
+;;  {"args" {},
+;;   "data" "{\"foo\":\"bar\"}",
+;;   "files" {},
+;;   "form" {},
+;;   "headers" {"Content-Length" "13", "Host" "httpbin.org"},
+;;   "json" {"foo" "bar"},
+;;   "origin" "188.x.x.x",
+;;   "url" "http://httpbin.org/post"},
+;;  :headers
+;;  {"Server" "nginx",
+;;   "Date" "Thu, 12 Nov 2015 17:33:59 GMT",
+;;   "Content-Type" "application/json",
+;;   "Content-Length" "258",
+;;   "Connection" "close",
+;;   "Access-Control-Allow-Origin" "*",
+;;   "Access-Control-Allow-Credentials" "true"}}
+----
+
 === Caches?
 
 === Redirections?
@@ -280,8 +353,10 @@ from the `:url` and `:query-string` from the original requests before being pass
 
 === Sending form data
 
+==== Browser
+
 For sending form data you need to send the `FormData` instance as the body of the request. Let's send
-a form to the httbin.org site and confirm that the form is sent correctly. 
+a form to the httbin.org site and confirm that the form is sent correctly.
 
 [source, clojure]
 ----

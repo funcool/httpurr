@@ -83,6 +83,8 @@
                            (url->options url))
             req (.request http (clj->js options))]
         (.setTimeout req timeout)
+        (when body
+          (.write req body))
         (.end req)
         (HttpRequest. req)))))
 
