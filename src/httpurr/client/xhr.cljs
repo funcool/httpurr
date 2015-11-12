@@ -1,14 +1,15 @@
 (ns httpurr.client.xhr
-  (:refer-clojure :exclude [get])
   (:require
    [httpurr.client :as c]
+   [httpurr.client.util :refer [prepare-headers]]
    [httpurr.protocols :as p]
    [httpurr.errors :as e]
    [goog.events :refer [listen]])
   (:import
    [goog.net XhrIo]
    [goog.net ErrorCode]
-   [goog.net EventType]))
+   [goog.net EventType])
+  (:refer-clojure :exclude [get]))
 
 (deftype Xhr [xhr]
   p/Request
@@ -37,13 +38,6 @@
       ErrorCode.EXCEPTION  e/exception
       ErrorCode.HTTP_ERROR e/http-error
       ErrorCode.ABORT      e/abort)))
-
-(defn prepare-headers
-  [headers]
-  (let [h (or headers {})]
-    (if (empty? h)
-      #js {}
-      (clj->js h))))
 
 (def client
   (reify
