@@ -1,5 +1,13 @@
 # Changelog #
 
+## Version 0.1.2 ##
+
+Date: 2015-11-12
+
+- Add node.js client on `httpur.client.node`.
+- Add a basic auth helper under `htttpurr.auth`.
+- Add more examples to the documentation.
+
 ## Version 0.1.1 ##
 
 Date: 2015-10-24
