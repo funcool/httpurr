@@ -270,6 +270,156 @@ Note that the requests passed to the clients have a escaped URL generated as the
 from the `:url` and `:query-string` from the original requests before being passed to the protocol's
 `send!` function.
 
+== Examples
+
+=== Encoding/Decoding
+
+Since requests and responses are plain maps, we can write simple encoding/decoding function
+and modify request and responses appropiately. For example, let's write a decoder function
+that converts JSON payloads to ClojureScript data structures:
+
+[source, clojure]
+----
+(require '[httpurr.client.node :as node])
+(require '[promesa.core :as p])
+
+(defn decode
+  [response]
+  (update response :body #(js->clj (js/JSON.parse %))))
+
+(defn get!
+  [url]
+  (p/then (node/get url) decode))
+
+(p/then (get! "http://httpbin.org/get")
+         (fn [response]
+           (cljs.pprint/pprint response)))
+;; {:status 200,
+;;  :body
+;;  {"args" {},
+;;   "headers" {"Host" "httpbin.org"},
+;;   "origin" "188.x.x.x",
+;;   "url" "http://httpbin.org/get"},
+;;  :headers
+;;  {"Server" "nginx",
+;;   "Date" "Thu, 12 Nov 2015 17:27:50 GMT",
+;;   "Content-Type" "application/json",
+;;   "Content-Length" "130",
+;;   "Connection" "close",
+;;   "Access-Control-Allow-Origin" "*",
+;;   "Access-Control-Allow-Credentials" "true"}}
+----
+
+Encoding can be achieved similarly applying the map transforming function to requests before sending them:
+
+[source, clojure]
+----
+(defn encode
+  [request]
+  (update request :body #(js/JSON.stringify (clj->js %))))
+
+(defn post!
+  [url req]
+  (p/then (node/post url (encode req)) decode))
+
+(p/then (post! "http://httpbin.org/post" {:body {:foo :bar}})
+         (fn [response]
+           (cljs.pprint/pprint response)))
+;; {:status 200,
+;;  :body
+;;  {"args" {},
+;;   "data" "{\"foo\":\"bar\"}",
+;;   "files" {},
+;;   "form" {},
+;;   "headers" {"Content-Length" "13", "Host" "httpbin.org"},
+;;   "json" {"foo" "bar"},
+;;   "origin" "188.x.x.x",
+;;   "url" "http://httpbin.org/post"},
+;;  :headers
+;;  {"Server" "nginx",
+;;   "Date" "Thu, 12 Nov 2015 17:33:59 GMT",
+;;   "Content-Type" "application/json",
+;;   "Content-Length" "258",
+;;   "Connection" "close",
+;;   "Access-Control-Allow-Origin" "*",
+;;   "Access-Control-Allow-Credentials" "true"}}
+----
+
+=== Auth
+
+The `httpur.auth` namespace contains the `basic` function for basic authentication. It
+accepts a realm, user and a password and returns a function that can be applied to a request
+for adding the basic auth headers:
+
+[source, clojure]
+----
+(require '[httpurr.client.node :as node])
+(require '[promesa.core :as p])
+(require '[httpurr.auth :as auth])
+
+(def credentials (auth/basic "Fake Realm" "Ada" "iinventedprogramming"))
+
+(defn get!
+  ([url]
+   (get! url {}))
+  ([url request]
+   (node/get url (credentials request))))
+
+(p/then (get! "http://httpbin.org/basic-auth/Ada/iinventedprogramming")
+        (fn [response]
+          (cljs.pprint/pprint response)))
+;; {:status 200, :body #object[Buffer {
+;;   "authenticated": true,
+;;   "user": "Ada"
+;; }
+;; ],
+;;  :headers
+;;  {"Server" "nginx",
+;;   "Date" "Thu, 12 Nov 2015 18:15:51 GMT",
+;;   "Content-Type" "application/json",
+;;   "Content-Length" "46",
+;;   "Connection" "close",
+;;   "Access-Control-Allow-Origin" "*",
+;;   "Access-Control-Allow-Credentials" "true"}}
+----
+
+A similar approach can be followed for implementing other authentication schemes.
+
+=== Sending form data
+
+==== Browser
+
+For sending form data you need to send the `FormData` instance as the body of the request. Let's send
+a form to the httbin.org site and confirm that the form is sent correctly.
+
+[source, clojure]
+----
+(require '[httpurr.client.xhr :as xhr])
+
+(def fd (js/FormData.))
+(.append fd "foo" "bar")
+(.append fd "baz" "foo")
+
+(defn parse-json-body
+  [{:keys [body}]
+  (js/JSON.parse body))
+
+(defn clj-body
+  [response]
+  (js->clj (parse-json-body response)))
+
+(def req
+  (http/post "http://httbin.org/post" {:body fd}))
+
+(p/then req
+        (fn [response]
+          (let [body (clj-body response)]
+            (println :form (get body "form"))
+            (println :content-type (get-in body ["headers" "Content-Type"])))))
+;; :form {baz foo, foo bar}
+;; :content-type multipart/form-data; boundary=----WebKitFormBoundaryg4VACYY9tWU91kvn
+----
+
 == Developers Guide
 
 === Contributing
