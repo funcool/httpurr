@@ -349,7 +349,45 @@ Encoding can be achieved similarly applying the map transforming function to req
 
 === Redirections?
 
-=== Basic Auth?
+=== Auth
+
+The `httpur.auth` namespace contains the `basic` function for basic authentication. It
+accepts a realm, user and a password and returns a function that can be applied to a request
+for adding the basic auth headers:
+
+[source, clojure]
+----
+(require '[httpurr.client.node :as node])
+(require '[promesa.core :as p])
+(require '[httpurr.auth :as auth])
+
+(def credentials (auth/basic "Fake Realm" "Ada" "iinventedprogramming"))
+
+(defn get!
+  ([url]
+   (get! url {}))
+  ([url request]
+   (node/get url (credentials request))))
+
+(p/then (get! "http://httpbin.org/basic-auth/Ada/iinventedprogramming")
+        (fn [response]
+          (cljs.pprint/pprint response)))
+;; {:status 200, :body #object[Buffer {
+;;   "authenticated": true,
+;;   "user": "Ada"
+;; }
+;; ],
+;;  :headers
+;;  {"Server" "nginx",
+;;   "Date" "Thu, 12 Nov 2015 18:15:51 GMT",
+;;   "Content-Type" "application/json",
+;;   "Content-Length" "46",
+;;   "Connection" "close",
+;;   "Access-Control-Allow-Origin" "*",
+;;   "Access-Control-Allow-Credentials" "true"}}
+----
+
+A similar approach can be followed for implementing other authentication schemes.
 
 === Sending form data
 
