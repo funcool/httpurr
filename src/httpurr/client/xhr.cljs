@@ -1,15 +1,13 @@
 (ns httpurr.client.xhr
-  (:require
-   [httpurr.client :as c]
-   [httpurr.client.util :refer [prepare-headers]]
-   [httpurr.protocols :as p]
-   [httpurr.errors :as e]
-   [goog.events :refer [listen]])
-  (:import
-   [goog.net XhrIo]
-   [goog.net ErrorCode]
-   [goog.net EventType])
-  (:refer-clojure :exclude [get]))
+  (:refer-clojure :exclude [get])
+  (:require [httpurr.client :as c]
+            [httpurr.client.util :refer [prepare-headers]]
+            [httpurr.protocols :as p]
+            [httpurr.errors :as e]
+            [goog.events :refer [listen]])
+  (:import goog.net.XhrIo
+           goog.net.ErrorCode
+           goog.net.EventType))
 
 (deftype Xhr [xhr]
   p/Request

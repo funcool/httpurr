@@ -42,7 +42,7 @@
                (when (fn? on-cancel)
                  (on-cancel (fn []
                               (when (satisfies? proto/Abort request)
-                               (proto/abort! request)))))
+                                (proto/abort! request)))))
                (proto/listen! request
                               (fn [resp]
                                 (if (proto/success? resp)
@@ -70,7 +70,7 @@
   "Given a promise resulting from a request, make a best-effort
   to abort the operation if the promise is still pending."
   [p]
-  (.cancel p))
+  (p/cancel! p))
 
 ;; facade
 

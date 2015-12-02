@@ -207,7 +207,8 @@
                :url url
                :headers {}}
           resp (send! req)]
-      (.finally resp (fn [err]
-                       (t/is (.isCancelled resp))
-                       (done)))
-      (http/abort! resp))))
+      (p/finally resp (fn [err]
+                        (t/is (p/cancelled? resp))
+                        (done)))
+      (p/catch (p/cancel! resp) (constantly nil)))))
+
