@@ -38,7 +38,11 @@
   response and rejected on timeout, exceptions, HTTP errors
   or abortions."
   [request]
-  (p/promise (fn [resolve reject]
+  (p/promise (fn [resolve reject on-cancel]
+               (when (fn? on-cancel)
+                 (on-cancel (fn []
+                              (when (satisfies? proto/Abort request)
+                               (proto/abort! request)))))
                (proto/listen! request
                               (fn [resp]
                                 (if (proto/success? resp)
@@ -59,14 +63,8 @@
   ([client request]
    (send! client request {}))
   ([client request options]
-   (let [request (perform! client request options)
-         p (request->promise request)]
-     (-> (.cancellable p)
-         (p/catch js/Promise.CancellationError
-                  (fn []
-                    (when (satisfies? proto/Abort request)
-                      (proto/abort! request))
-                    (throw :abort)))))))
+   (let [request (perform! client request options)]
+     (request->promise request))))
 
 (defn abort!
   "Given a promise resulting from a request, make a best-effort
