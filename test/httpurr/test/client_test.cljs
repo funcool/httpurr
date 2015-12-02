@@ -195,10 +195,10 @@
                :headers {}}
           resp (send! req)]
       (p/catch resp (fn [err]
-                     (t/is (= err e/timeout))
-                     (done))))
+                      (t/is (= err e/timeout))
+                      (done)))
       (let [xhr (raw-last-request)]
-        (.simulateTimeout xhr))))
+        (.simulateTimeout xhr)))))
 
 (t/deftest request-can-be-aborted
   (t/async done
@@ -207,7 +207,7 @@
                :url url
                :headers {}}
           resp (send! req)]
-      (p/catch resp (fn [err]
-                      (t/is (= err e/abort))
-                      (done)))
+      (.finally resp (fn [err]
+                       (t/is (.isCancelled resp))
+                       (done)))
       (http/abort! resp))))
