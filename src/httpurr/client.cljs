@@ -1,11 +1,10 @@
 (ns httpurr.client
   "The HTTP client. This namespace provides a low-level `send!` primitive for
   performing requests as well as aliases for all the HTTP methods."
-  (:require
-   [promesa.core :as p]
-   [httpurr.protocols :as proto])
-  (:import [goog Uri])
-  (:refer-clojure :exclude [get]))
+  (:refer-clojure :exclude [get])
+  (:require [promesa.core :as p]
+            [httpurr.protocols :as proto])
+  (:import goog.Uri))
 
 (def keyword->method
   {:head    "HEAD"
@@ -19,18 +18,14 @@
 
 (defn- perform!
   [client request options]
-  (let [{:keys [method
-                url
-                headers
-                body
-                query-string]} request
-         uri (Uri. url)
-         uri (if query-string
-               (.setQuery uri query-string)
-               uri)
-         request (-> (assoc request :url (.toString uri))
-                     (dissoc :query-string))]
-    (proto/send! client request options)))
+  (let [{:keys [method url headers body query-string]} request
+        uri (Uri. url)
+        uri (if query-string
+              (.setQuery uri query-string)
+              uri)
+        request (-> (assoc request :url (.toString uri))
+                    (dissoc :query-string))]
+    (proto/-send client request options)))
 
 (defn request->promise
   "Given a object that implements `httpurr.protocols.Request`,
@@ -42,12 +37,12 @@
                (when (fn? on-cancel)
                  (on-cancel (fn []
                               (when (satisfies? proto/Abort request)
-                                (proto/abort! request)))))
-               (proto/listen! request
+                                (proto/-abort request)))))
+               (proto/-listen request
                               (fn [resp]
-                                (if (proto/success? resp)
-                                  (resolve (proto/response resp))
-                                  (reject (proto/error resp))))))))
+                                (if (proto/-success? resp)
+                                  (resolve (proto/-response resp))
+                                  (reject (proto/-error resp))))))))
 
 (defn send!
   "Given a request map and maybe an options map, perform
