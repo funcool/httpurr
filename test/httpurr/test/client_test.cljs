@@ -2,15 +2,11 @@
   (:require [cljs.test :as t]
             [httpurr.client :as http]
             [httpurr.errors :as e]
-            [httpurr.client.xhr :refer [client]]
+            [httpurr.client.xhr :as xhr]
             [promesa.core :as p])
-  (:import
-   [goog.testing.net XhrIo]
-   [goog.net]))
+  (:import goog.testing.net.XhrIo))
 
 ;; helpers
-
-(set! (.-XhrIo goog.net) (.-XhrIo goog.testing.net)) ;; mock XhrIo
 
 (defn raw-last-request
   []
@@ -26,11 +22,12 @@
 
 (defn cleanup
   []
-  (.cleanup XhrIo))
+  (.cleanup goog.testing.net.XhrIo))
 
 (defn send!
   [& args]
-  (apply http/send! client args))
+  (binding [xhr/*xhr-impl* goog.testing.net.XhrIo]
+    (apply http/send! xhr/client args)))
 
 ;; tests
 
@@ -190,15 +187,13 @@
 (t/deftest send-request-fails-when-timeout-forced
   (t/async done
     (let [url "http://www.github.com/funcool/cats"
-          req {:method :get
-               :url url
-               :headers {}}
+          req {:method :get :url url :headers {}}
           resp (send! req)]
       (p/catch resp (fn [err]
-                     (t/is (= err e/timeout))
-                     (done))))
+                      (t/is (= err e/timeout))
+                      (done)))
       (let [xhr (raw-last-request)]
-        (.simulateTimeout xhr))))
+        (.simulateTimeout xhr)))))
 
 (t/deftest request-can-be-aborted
   (t/async done
@@ -207,7 +202,8 @@
                :url url
                :headers {}}
           resp (send! req)]
-      (p/catch resp (fn [err]
-                      (t/is (= err e/abort))
-                      (done)))
-      (http/abort! resp))))
+      (p/finally resp (fn [err]
+                        (t/is (p/cancelled? resp))
+                        (done)))
+      (p/catch (p/cancel! resp) (constantly nil)))))
+

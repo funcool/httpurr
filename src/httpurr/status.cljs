@@ -9,12 +9,8 @@
   [{:keys [status]}]
   (<= 100 status 199))
 
-(def continue
-  (.-CONTINUE HttpStatus))
-
-(def switching-protocols
-  (.-SWITCHING_PROTOCOLS HttpStatus))
-
+(def continue HttpStatus.CONTINUE)
+(def switching-protocols HttpStatus.SWITCHING_PROTOCOLS)
 (def processing 102)
 
 (def informational-codes #{continue
@@ -26,29 +22,15 @@
   [{:keys [status]}]
   (<= 200 status 299))
 
-(def ok
-  (.-OK HttpStatus))
-
-(def created
-  (.-CREATED HttpStatus))
-
-(def accepted
-  (.-ACCEPTED HttpStatus))
-
+(def ok HttpStatus.OK)
+(def created HttpStatus.CREATED)
+(def accepted HttpStatus.ACCEPTED)
 (def non-authoritative-information 203)
-
-(def no-content
-  (.-NO_CONTENT HttpStatus))
-
-(def reset-content
-  (.-RESET_CONTENT HttpStatus))
-
+(def no-content HttpStatus.NO_CONTENT)
+(def reset-content HttpStatus.RESET_CONTENT)
 (def partial-content 206)
-
 (def multi-status 207)
-
 (def already-reported 208)
-
 (def im-used 226)
 
 (def success-codes #{ok
@@ -67,27 +49,13 @@
   [{:keys [status]}]
   (<= 300 status 399))
 
-(def multiple-choices
-  (.-MULTIPLE_CHOICES HttpStatus))
-
-(def moved-permanently
-  (.-MOVED_PERMANENTLY HttpStatus))
-
-(def found
-  (.-FOUND HttpStatus))
-
-(def see-other
-  (.-SEE_OTHER HttpStatus))
-
-(def not-modified
-  (.-NOT_MODIFIED HttpStatus))
-
-(def use-proxy
-  (.-USE_PROXY HttpStatus))
-
-(def temporary-redirect
-  (.-TEMPORARY_REDIRECT HttpStatus))
-
+(def multiple-choices HttpStatus.MULTIPLE_CHOICES)
+(def moved-permanently HttpStatus.MOVED_PERMANENTLY)
+(def found HttpStatus.FOUND)
+(def see-other HttpStatus.SEE_OTHER)
+(def not-modified HttpStatus.NOT_MODIFIED)
+(def use-proxy HttpStatus.USE_PROXY)
+(def temporary-redirect HttpStatus.TEMPORARY_REDIRECT)
 (def permanent-redirect 308)
 
 (def redirection-codes #{multiple-choices
@@ -104,70 +72,30 @@
   [{:keys [status]}]
   (<= 400 status 499))
 
-(def bad-request
-  (.-BAD_REQUEST HttpStatus))
+(def bad-request HttpStatus.BAD_REQUEST)
+(def unauthorized HttpStatus.UNAUTHORIZED)
+(def payment-required HttpStatus.PAYMENT_REQUIRED)
+(def forbidden HttpStatus.FORBIDDEN)
+(def not-found HttpStatus.NOT_FOUND)
+(def method-not-allowed HttpStatus.METHOD_NOT_ALLOWED)
+(def not-acceptable HttpStatus.NOT_ACCEPTABLE)
+(def proxy-authentication-required HttpStatus.PROXY_AUTHENTICATION_REQUIRED)
+(def request-timeout HttpStatus.REQUEST_TIMEOUT)
+(def conflict HttpStatus.CONFLICT)
 
-(def unauthorized
-  (.-UNAUTHORIZED HttpStatus))
+(def gone HttpStatus.GONE)
+(def length-required HttpStatus.LENGTH_REQUIRED)
+(def precondition-failed HttpStatus.PRECONDITION_FAILED)
+(def payload-too-large HttpStatus.REQUEST_ENTITY_TOO_LARGE)
+(def request-uri-too-long HttpStatus.REQUEST_URI_TOO_LONG)
+(def unsupported-media-type HttpStatus.UNSUPPORTED_MEDIA_TYPE)
+(def request-range-not-satisfieable HttpStatus.REQUEST_RANGE_NOT_SATISFIABLE)
 
-(def payment-required
-  (.-PAYMENT_REQUIRED HttpStatus))
-
-(def forbidden
-  (.-FORBIDDEN HttpStatus))
-
-(def not-found
-  (.-NOT_FOUND HttpStatus))
-
-(def method-not-allowed
-  (.-METHOD_NOT_ALLOWED HttpStatus))
-
-(def not-acceptable
-  (.-NOT_ACCEPTABLE HttpStatus))
-
-(def proxy-authentication-required
-  (.-PROXY_AUTHENTICATION_REQUIRED HttpStatus))
-
-(def request-timeout
-  (.-REQUEST_TIMEOUT HttpStatus))
-
-(def conflict
-  (.-CONFLICT HttpStatus))
-
-(def gone
-  (.-GONE HttpStatus))
-
-(def length-required
-  (.-LENGTH_REQUIRED HttpStatus))
-
-(def precondition-failed
-  (.-PRECONDITION_FAILED HttpStatus))
-
-(def payload-too-large
-  (.-REQUEST_ENTITY_TOO_LARGE HttpStatus))
-
-(def request-uri-too-long
-  (.-REQUEST_URI_TOO_LONG HttpStatus))
-
-(def unsupported-media-type
-  (.-UNSUPPORTED_MEDIA_TYPE HttpStatus))
-
-(def request-range-not-satisfieable
-  (.-REQUEST_RANGE_NOT_SATISFIABLE HttpStatus))
-
-(def expectation-failed
-  (.-EXPECTATION_FAILED HttpStatus))
-
+(def expectation-failed HttpStatus.EXPECTATION_FAILED)
 (def authentication-timeout 419)
-
-(def precondition-required
-  (.-PRECONDITION_REQUIRED HttpStatus))
-
-(def too-many-requests
-  (.-TOO_MANY_REQUESTS HttpStatus))
-
-(def request-header-fields-too-large
-  (.-REQUEST_HEADER_FIELDS_TOO_LARGE HttpStatus))
+(def precondition-required HttpStatus.PRECONDITION_REQUIRED)
+(def too-many-requests HttpStatus.TOO_MANY_REQUESTS)
+(def request-header-fields-too-large HttpStatus.REQUEST_HEADER_FIELDS_TOO_LARGE)
 
 (def client-error-codes #{bad-request
                           unauthorized
@@ -197,26 +125,13 @@
   [{:keys [status]}]
   (<= 500 status 599))
 
-(def internal-server-error
-  (.-INTERNAL_SERVER_ERROR HttpStatus))
-
-(def not-implemented
-  (.-NOT_IMPLEMENTED HttpStatus))
-
-(def bad-gateway
-  (.-BAD_GATEWAY HttpStatus))
-
-(def service-unavailable
-  (.-SERVICE_UNAVAILABLE HttpStatus))
-
-(def gateway-timeout
-  (.-GATEWAY_TIMEOUT HttpStatus))
-
-(def http-version-not-supported
-  (.-HTTP_VERSION_NOT_SUPPORTED HttpStatus))
-
-(def network-authentication-required
-  (.-NETWORK_AUTHENTICATION_REQUIRED HttpStatus))
+(def internal-server-error HttpStatus.INTERNAL_SERVER_ERROR)
+(def not-implemented HttpStatus.NOT_IMPLEMENTED)
+(def bad-gateway HttpStatus.BAD_GATEWAY)
+(def service-unavailable HttpStatus.SERVICE_UNAVAILABLE)
+(def gateway-timeout HttpStatus.GATEWAY_TIMEOUT)
+(def http-version-not-supported HttpStatus.HTTP_VERSION_NOT_SUPPORTED)
+(def network-authentication-required HttpStatus.NETWORK_AUTHENTICATION_REQUIRED)
 
 (def server-error-codes #{internal-server-error
                           not-implemented
