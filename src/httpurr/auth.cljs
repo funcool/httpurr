@@ -1,5 +1,5 @@
 (ns httpurr.auth
-  (:import [goog.crypt base64]))
+  (:require [goog.crypt.base64 :as base64]))
 
 (defn www-auth-header
   [realm]
