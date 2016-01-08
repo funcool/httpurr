@@ -1,6 +1,6 @@
 = httpurr
 Funcool
-0.1.0
+0.3.0
 :toc: left
 :!numbered:
 :idseparator: -
