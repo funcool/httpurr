@@ -222,7 +222,7 @@ We want to transform the promises by extracting the body of the 200 responses an
 
 == Error handling
 
-The link:http://funcool.github.io/cats/latest/[Promesa docs] explain all the possible combinators
+The link:http://funcool.github.io/promesa/latest/[Promesa docs] explain all the possible combinators
 for working with promises. We've already used `then` for processing responses, let's look at two
 other useful functions: `catch` and `branch`.
 
