@@ -193,10 +193,10 @@ that can return:
 
 * 200 OK status code if everything went well
 * 404 not found if the requested entity wasn't found
-* 402 unauthorized when we don't have permission to read the resource
+* 401 unauthorized when we don't have permission to read the resource
 
 We want to transform the promises by extracting the body of the 200 responses and, if we encounter a
-404 or 402, return a keyword denoting the type of error. Let's give it a go:
+404 or 401, return a keyword denoting the type of error. Let's give it a go:
 
 [source, clojure]
 ----
