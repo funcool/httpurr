@@ -424,13 +424,13 @@ that can return:</p>
 <p>404 not found if the requested entity wasn&#8217;t found</p>
 </li>
 <li>
-<p>402 unauthorized when we don&#8217;t have permission to read the resource</p>
+<p>401 unauthorized when we don&#8217;t have permission to read the resource</p>
 </li>
 </ul>
 </div>
 <div class="paragraph">
 <p>We want to transform the promises by extracting the body of the 200 responses and, if we encounter a
-404 or 402, return a keyword denoting the type of error. Let&#8217;s give it a go:</p>
+404 or 401, return a keyword denoting the type of error. Let&#8217;s give it a go:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -771,7 +771,7 @@ For more information, please refer to &lt;http://unlicense.org/&gt;</pre>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2016-01-08 20:30:38 EET
+Last updated 2016-01-25 10:11:56 EET
 </div>
 </div>
 </body>
