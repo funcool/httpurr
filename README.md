@@ -1,4 +1,4 @@
-# httpurr
+# httpurr #
 
 [![Travis Badge](https://img.shields.io/travis/funcool/httpurr/master.svg)](https://travis-ci.org/funcool/httpurr "Travis Badge")
 
@@ -8,7 +8,8 @@ A ring-inspired, promise-returning, **simple** ClojureScript HTTP client.
 
 Documentation: https://funcool.github.io/httpurr/latest/
 
-## License
+
+## License ##
 
 This is free and unencumbered software released into the public domain.
 
