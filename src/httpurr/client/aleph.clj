@@ -45,14 +45,3 @@
 (def patch (partial (c/method :patch) client))
 (def delete (partial (c/method :delete) client))
 (def trace (partial (c/method :trace) client))
-
-(comment
-  @(c/send! client {:method :get :url "http://google.com"} {})
-  
-  (clojure.pprint/pprint
-   @(get "http://httpbin.org/get"))
-
-  (clojure.pprint/pprint
-   @(put "http://httpbin.org/put" {:body "{}"}))  
-
-  @(c/send! client {:method :put :url "http://httpbin.org/put" :body "foo"} {}))
