@@ -4,7 +4,7 @@
   (:refer-clojure :exclude [get])
   (:require [promesa.core :as p]
             [httpurr.protocols :as proto])
-  (:import goog.Uri))
+  #?(:clj (:import java.net.URL) :cljs (:import goog.Uri)))
 
 (def keyword->method
   {:head    "HEAD"
@@ -16,15 +16,23 @@
    :delete  "DELETE"
    :trace   "TRACE"})
 
+#?(:clj
+   (defn make-uri
+     [url query-string]
+     (let [uri (URL. (str url "?" (if query-string query-string "")))]
+       (.toString uri)))
+   :cljs
+   (defn make-uri
+     [url query-string]
+     (let [uri (Uri. url)
+           uri (if query-string
+                 (.setQuery uri query-string)
+                 uri)]
+       uri)))
+
 (defn- perform!
   [client request options]
-  (let [{:keys [method url headers body query-string]} request
-        uri (Uri. url)
-        uri (if query-string
-              (.setQuery uri query-string)
-              uri)
-        request (-> (assoc request :url (.toString uri))
-                    (dissoc :query-string))]
+  (let [{:keys [method url headers body query-string] :or {method :get}} request]
     (proto/-send client request options)))
 
 (defn request->promise
@@ -33,8 +41,9 @@
   response and rejected on timeout, exceptions, HTTP errors
   or abortions."
   [request]
-  (p/promise (fn [resolve reject on-cancel]
-               (when (fn? on-cancel)
+  (p/promise (fn [resolve reject]
+               ; fixme
+               #_(when (fn? on-cancel)
                  (on-cancel (fn []
                               (when (satisfies? proto/Abort request)
                                 (proto/-abort request)))))

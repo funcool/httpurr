@@ -1,7 +1,6 @@
 (ns httpurr.status
   "A namespace of constants for HTTP status codes and predicates for discerning
-  the types of responses."
- (:import [goog.net HttpStatus]))
+  the types of responses.")
 
 ;; 1xx informational
 
@@ -9,8 +8,8 @@
   [{:keys [status]}]
   (<= 100 status 199))
 
-(def continue HttpStatus.CONTINUE)
-(def switching-protocols HttpStatus.SWITCHING_PROTOCOLS)
+(def continue 100)
+(def switching-protocols 101)
 (def processing 102)
 
 (def informational-codes #{continue
@@ -22,12 +21,12 @@
   [{:keys [status]}]
   (<= 200 status 299))
 
-(def ok HttpStatus.OK)
-(def created HttpStatus.CREATED)
-(def accepted HttpStatus.ACCEPTED)
+(def ok 200)
+(def created 201)
+(def accepted 202)
 (def non-authoritative-information 203)
-(def no-content HttpStatus.NO_CONTENT)
-(def reset-content HttpStatus.RESET_CONTENT)
+(def no-content 204)
+(def reset-content 205)
 (def partial-content 206)
 (def multi-status 207)
 (def already-reported 208)
@@ -49,13 +48,13 @@
   [{:keys [status]}]
   (<= 300 status 399))
 
-(def multiple-choices HttpStatus.MULTIPLE_CHOICES)
-(def moved-permanently HttpStatus.MOVED_PERMANENTLY)
-(def found HttpStatus.FOUND)
-(def see-other HttpStatus.SEE_OTHER)
-(def not-modified HttpStatus.NOT_MODIFIED)
-(def use-proxy HttpStatus.USE_PROXY)
-(def temporary-redirect HttpStatus.TEMPORARY_REDIRECT)
+(def multiple-choices 300)
+(def moved-permanently 301)
+(def found 302)
+(def see-other 303)
+(def not-modified 304)
+(def use-proxy 305)
+(def temporary-redirect 307)
 (def permanent-redirect 308)
 
 (def redirection-codes #{multiple-choices
@@ -72,30 +71,28 @@
   [{:keys [status]}]
   (<= 400 status 499))
 
-(def bad-request HttpStatus.BAD_REQUEST)
-(def unauthorized HttpStatus.UNAUTHORIZED)
-(def payment-required HttpStatus.PAYMENT_REQUIRED)
-(def forbidden HttpStatus.FORBIDDEN)
-(def not-found HttpStatus.NOT_FOUND)
-(def method-not-allowed HttpStatus.METHOD_NOT_ALLOWED)
-(def not-acceptable HttpStatus.NOT_ACCEPTABLE)
-(def proxy-authentication-required HttpStatus.PROXY_AUTHENTICATION_REQUIRED)
-(def request-timeout HttpStatus.REQUEST_TIMEOUT)
-(def conflict HttpStatus.CONFLICT)
-
-(def gone HttpStatus.GONE)
-(def length-required HttpStatus.LENGTH_REQUIRED)
-(def precondition-failed HttpStatus.PRECONDITION_FAILED)
-(def payload-too-large HttpStatus.REQUEST_ENTITY_TOO_LARGE)
-(def request-uri-too-long HttpStatus.REQUEST_URI_TOO_LONG)
-(def unsupported-media-type HttpStatus.UNSUPPORTED_MEDIA_TYPE)
-(def request-range-not-satisfieable HttpStatus.REQUEST_RANGE_NOT_SATISFIABLE)
-
-(def expectation-failed HttpStatus.EXPECTATION_FAILED)
+(def bad-request 400)
+(def unauthorized 401)
+(def payment-required 402)
+(def forbidden 403)
+(def not-found 404)
+(def method-not-allowed 405)
+(def not-acceptable 406)
+(def proxy-authentication-required 407)
+(def request-timeout 408)
+(def conflict 409)
+(def gone 410)
+(def length-required 411)
+(def precondition-failed 412)
+(def payload-too-large 413)
+(def request-uri-too-long 414)
+(def unsupported-media-type 415)
+(def request-range-not-satisfieable 416)
+(def expectation-failed 417)
 (def authentication-timeout 419)
-(def precondition-required HttpStatus.PRECONDITION_REQUIRED)
-(def too-many-requests HttpStatus.TOO_MANY_REQUESTS)
-(def request-header-fields-too-large HttpStatus.REQUEST_HEADER_FIELDS_TOO_LARGE)
+(def precondition-required 428)
+(def too-many-requests 429)
+(def request-header-fields-too-large 431)
 
 (def client-error-codes #{bad-request
                           unauthorized
@@ -125,13 +122,13 @@
   [{:keys [status]}]
   (<= 500 status 599))
 
-(def internal-server-error HttpStatus.INTERNAL_SERVER_ERROR)
-(def not-implemented HttpStatus.NOT_IMPLEMENTED)
-(def bad-gateway HttpStatus.BAD_GATEWAY)
-(def service-unavailable HttpStatus.SERVICE_UNAVAILABLE)
-(def gateway-timeout HttpStatus.GATEWAY_TIMEOUT)
-(def http-version-not-supported HttpStatus.HTTP_VERSION_NOT_SUPPORTED)
-(def network-authentication-required HttpStatus.NETWORK_AUTHENTICATION_REQUIRED)
+(def internal-server-error 500)
+(def not-implemented 501)
+(def bad-gateway 502)
+(def service-unavailable 503)
+(def gateway-timeout 504)
+(def http-version-not-supported 505)
+(def network-authentication-required 511)
 
 (def server-error-codes #{internal-server-error
                           not-implemented

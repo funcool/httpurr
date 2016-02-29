@@ -41,10 +41,11 @@
 (def client
   (reify p/Client
     (-send [_ request {timeout :timeout :or {timeout 0} :as options}]
-      (let [{:keys [method url headers body]} request
+      (let [{:keys [method url query-string headers body]} request
+            uri (c/make-uri url query-string)
             method (c/keyword->method method)
             headers (util/prepare-headers headers)
-            xhr (.send *xhr-impl* url nil method body headers timeout)]
+            xhr (.send *xhr-impl* uri nil method body headers timeout)]
         (Xhr. xhr)))))
 
 (def send! (partial c/send! client))

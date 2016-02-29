@@ -5,6 +5,7 @@
   :source-paths ["src"]
   :dependencies [[org.clojure/clojure "1.8.0" :scope "provided"]
                  [org.clojure/clojurescript "1.7.228" :scope "provided"]
+                 [aleph "0.4.1-beta4" :scope "provided"]
                  [org.clojure/test.check "0.9.0" :scope "test"]
                  [funcool/promesa "0.8.1"]]
 

@@ -1,10 +1,11 @@
 (ns httpurr.test.status-test
-  (:require [cljs.test :as t]
+  (:require #?(:clj [clojure.test :as t] :cljs [cljs.test :as t])
+            #?(:clj [clojure.test.check.clojure-test :refer [defspec]])
             [httpurr.generators :as gen]
             [httpurr.status :as http]
             [clojure.test.check :as tc]
             [clojure.test.check.properties :as prop :include-macros true])
-  (:require-macros [clojure.test.check.clojure-test :refer [defspec]]))
+  #?(:cljs (:require-macros [clojure.test.check.clojure-test :refer [defspec]])))
 
 ;; 1xx
 (defspec informational?

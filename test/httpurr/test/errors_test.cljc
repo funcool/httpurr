@@ -1,6 +1,9 @@
 (ns httpurr.test.errors-test
   (:require
-   [cljs.test :as t]
+   #?(:clj
+      [clojure.test :as t]
+      :cljs
+      [cljs.test :as t])
    [httpurr.errors :as e]))
 
 (t/deftest timeout
