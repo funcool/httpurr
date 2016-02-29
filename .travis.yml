@@ -3,3 +3,4 @@ lein: lein2
 script:
 - ./scripts/build
 - node out/tests.js
+- lein test
