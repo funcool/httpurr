@@ -41,17 +41,19 @@
   response and rejected on timeout, exceptions, HTTP errors
   or abortions."
   [request]
-  (p/promise (fn [resolve reject]
-               ; fixme
-               #_(when (fn? on-cancel)
+  (p/promise (fn promise-ctor
+               ([resolve reject]
+                (promise-ctor resolve reject nil))
+               ([resolve reject on-cancel]
+                (when (fn? on-cancel)
                  (on-cancel (fn []
                               (when (satisfies? proto/Abort request)
                                 (proto/-abort request)))))
-               (proto/-listen request
-                              (fn [resp]
-                                (if (proto/-success? resp)
-                                  (resolve (proto/-response resp))
-                                  (reject (proto/-error resp))))))))
+                (proto/-listen request
+                               (fn [resp]
+                                 (if (proto/-success? resp)
+                                   (resolve (proto/-response resp))
+                                   (reject (proto/-error resp)))))))))
 
 (defn send!
   "Given a request map and maybe an options map, perform
