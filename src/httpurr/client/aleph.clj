@@ -4,7 +4,8 @@
             [manifold.deferred :as dfd]
             [httpurr.client :as c]
             [httpurr.protocols :as p]
-            [httpurr.errors :as e]))
+            [httpurr.errors :as e]
+            [httpurr.status :as s]))
 
 (defn- success
   [response]
@@ -13,12 +14,26 @@
     (-success? [_] true)
     (-response [_] response)))
 
+(defn- response?
+  [exc-data]
+  (and (map? exc-data)
+       (s/status-code? (clojure.core/get exc-data :status 0))))
+
 (defn- error
   [err]
-  (reify
-    p/Response
-    (-success? [_] false)
-    (-error [_] err)))
+  (if (response? (ex-data err))
+    (reify
+      p/Response
+      (-success? [_]
+        true)
+      (-response [_]
+        (ex-data err)))
+    (reify
+      p/Response
+      (-success? [_]
+        false)
+      (-error [_]
+        err))))
 
 (defn deferred->http
   [d]
