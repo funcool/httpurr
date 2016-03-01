@@ -143,3 +143,8 @@
   [resp]
   (or (client-error? resp)
       (server-error? resp)))
+
+;; xxx
+(defn status-code?
+  [status]
+  (<= 100 status 599))
