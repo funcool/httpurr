@@ -1,5 +1,6 @@
 (ns httpurr.test.client-test
   (:require [clojure.test :as t]
+            [byte-streams :as bs]
             [httpurr.client :as http]
             [httpurr.errors :as e]
             [httpurr.client.aleph :as a]
@@ -16,7 +17,9 @@
   [request]
   (reset! last-request request)
   {:status 200
-   :body (pr-str request)
+   :body (if-let [body (:body request)]
+           (pr-str (update request :body bs/to-string))
+           (pr-str request))
    :content-type "text/plain"})
 
 (def port (atom 0))
@@ -122,15 +125,17 @@
              :headers {"content-type" ctype}
              :body content}]
 
-    @(send! req)
-
-    (let [{:keys [request-method
-                  body
+    (let [response @(send! req)
+          {:keys [request-method
                   headers]} @last-request
           sent-headers (:headers req)]
       (t/is (= request-method :post))
-      #_(t/is (= (slurp body) content)))))
-
+      (t/is (= (-> response
+                 :body
+                 slurp
+                 read-string
+                 :body)
+               content)))))
 
 (t/deftest send-returns-a-promise
   (let [path "/funcool/cats"
