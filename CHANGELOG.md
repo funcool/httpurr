@@ -1,5 +1,11 @@
 # Changelog #
 
+## Version 0.5.0 ##
+
+Date: unreleased
+
+- Clojure compatibility
+- An aleph-based Clojure client on `httpurr.client.aleph`
 
 ## Version 0.3.0 ##
 
