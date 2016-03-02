@@ -1,5 +1,5 @@
 (defproject funcool/httpurr "0.5.0-SNAPSHOT"
-  :description "A ring-inspired, promise-returning, simple ClojureScript HTTP client."
+  :description "A ring-inspired, promise-returning, simple Clojure(Script) HTTP client."
   :url "http://funcool.github.io/httpurr"
   :license {:name "Public Domain" :url "http://unlicense.org"}
   :source-paths ["src"]

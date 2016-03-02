@@ -9,7 +9,7 @@ Funcool
 :source-highlighter: pygments
 :pygments-style: friendly
 
-A ring-inspired, promise-returning, *simple* ClojureScript HTTP client.
+A ring-inspired, promise-returning, *simple* Clojure(Script) HTTP client.
 
 == Why another library?
 
@@ -19,11 +19,9 @@ are the ones made for `httpurr`.
 * Promises are a natural fit for the request-response nature of HTTP. They contain either
   an eventual value (the response) or an error value. CSP channels lack first class errors
   and callbacks/errbacks are cumbersome to compose.
-  `httpurr` uses link:https://github.com/funcool/promesa[promesa], a wrapper around the
-  performant Bluebird JS library which implements the Applicative and Monad protocols of
-  link:https://github.com/funcool/cats[cats]. This means that you have core.async
-  like syntax with `cats.core/mlet` and, if you want to maximize concurrency, applicative
-  composition of promises with `cats.core/alet`.
+  `httpurr` uses link:https://github.com/funcool/promesa[promesa] to provide a cross-platform
+  promise type and API. This means that you have core.async like syntax with `cats.core/mlet`
+  and, if you want to maximize concurrency, applicative composition of promises with `cats.core/alet`.
 
 * A data based API, requests and responses are just maps. This makes easy to create and
   transform requests piping various transformations together and the same is true for responses.
@@ -39,7 +37,7 @@ are the ones made for `httpurr`.
   types.
 
 * Pluggable client implementation. Currently `httpurr` ships with an Xhr-based client for the
-  browser and a node client.
+  browser,  a node client, and a aleph client for Clojure.
 
 * Intended as a infrastructure lib that sits at the bottom of your HTTP client API, we'll add
   things judiciously.
