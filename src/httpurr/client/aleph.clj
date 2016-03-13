@@ -4,7 +4,6 @@
             [manifold.deferred :as dfd]
             [httpurr.client :as c]
             [httpurr.protocols :as p]
-            [httpurr.errors :as e]
             [httpurr.status :as s]))
 
 (defn- success

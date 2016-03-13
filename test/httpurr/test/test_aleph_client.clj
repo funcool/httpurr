@@ -2,7 +2,6 @@
   (:require [clojure.test :as t]
             [byte-streams :as bs]
             [httpurr.client :as http]
-            [httpurr.errors :as e]
             [httpurr.client.aleph :as a]
             [aleph.http :as ahttp]
             [promesa.core :as p]))

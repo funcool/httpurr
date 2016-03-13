@@ -2,8 +2,7 @@
   (:refer-clojure :exclude [get])
   (:require [httpurr.client :as c]
             [httpurr.client.util :refer [prepare-headers]]
-            [httpurr.protocols :as p]
-            [httpurr.errors :as e]))
+            [httpurr.protocols :as p]))
 
 (def ^:private http (js/require "http"))
 (def ^:private url (js/require "url"))
@@ -48,19 +47,19 @@
     (.on req
          "abort"
          (fn [err]
-           (cb (HttpResponseError. e/abort))))
+           (cb (HttpResponseError. :abort))))
     (.on req
          "timeout"
          (fn [err]
-           (cb (HttpResponseError. e/timeout))))
+           (cb (HttpResponseError. :timeout))))
     (.on req
          "clientError"
          (fn [err]
-           (cb (HttpResponseError. e/http-error))))
+           (cb (HttpResponseError. :http))))
     (.on req
          "error"
          (fn [err]
-           (cb (HttpResponseError. e/exception)))))
+           (cb (HttpResponseError. :exception)))))
 
   p/Abort
   (-abort [_]

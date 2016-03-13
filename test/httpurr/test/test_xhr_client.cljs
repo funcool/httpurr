@@ -1,7 +1,6 @@
 (ns httpurr.test.test-xhr-client
   (:require [cljs.test :as t]
             [httpurr.client :as http]
-            [httpurr.errors :as e]
             [httpurr.client.xhr :as xhr]
             [promesa.core :as p])
   (:import goog.testing.net.XhrIo))

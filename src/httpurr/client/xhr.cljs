@@ -3,7 +3,6 @@
   (:require [httpurr.client :as c]
             [httpurr.client.util :as util]
             [httpurr.protocols :as p]
-            [httpurr.errors :as e]
             [goog.events :as events])
   (:import goog.net.ErrorCode
            goog.net.EventType
