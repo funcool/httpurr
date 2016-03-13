@@ -5,12 +5,12 @@
 (let [start (System/nanoTime)]
   (b/build
    (b/inputs "test" "src")
-   {:main 'httpurr.runner
+   {:main 'httpurr.test.runner
     :output-to "out/tests.js"
     :output-dir "out"
     :target :nodejs
-    :optimizations :simple
-    :pretty-print true
+    :optimizations :whitespace
+    :pretty-print false
     :language-in  :ecmascript5
     :language-out :ecmascript5
     :verbose true})
