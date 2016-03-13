@@ -9,55 +9,28 @@ Funcool
 :source-highlighter: pygments
 :pygments-style: friendly
 
+== Introduction
+
 A ring-inspired, promise-returning, *simple* Clojure(Script) HTTP client.
 
-== Why another library?
 
-There are plenty of HTTP client libraries available, each with its own design decisions. Here
-are the ones made for `httpurr`.
+=== Project Maturity
 
-* Promises are a natural fit for the request-response nature of HTTP. They contain either
-  an eventual value (the response) or an error value. CSP channels lack first class errors
-  and callbacks/errbacks are cumbersome to compose.
-  `httpurr` uses link:https://github.com/funcool/promesa[promesa] to provide a cross-platform
-  promise type and API. This means that you have core.async like syntax with `cats.core/mlet`
-  and, if you want to maximize concurrency, applicative composition of promises with `cats.core/alet`.
+Since _httpurr_ is a young project there can be some API breakage.
 
-* A data based API, requests and responses are just maps. This makes easy to create and
-  transform requests piping various transformations together and the same is true for responses.
 
-* No automatic encoding/decoding based on content type, it sits at a lower level. Is your
-  responsibility to encode and decode data, `httpurr` just speaks HTTP.
+=== Install
 
-* No automatic generation of query strings. There is no consensus on how to use query params
-  for things like collection and don't want to make the choice for you. `httpurr` uses `goog.net.Uri`
-  internally so your URLs will be correctly encoded.
+The simplest way to use _httpurr_ in a clojure project, is by including it in the
+dependency vector on your *_project.clj_* file:
 
-* Constants with every HTTP status code, sets of status codes and predicates for discerning response
-  types.
+[source,clojure]
+----
+[funcool/httpurr "0.4.0"]
+----
 
-* Pluggable client implementation. Currently `httpurr` ships with an Xhr-based client for the
-  browser,  a node client, and a aleph client for Clojure.
 
-* Intended as a infrastructure lib that sits at the bottom of your HTTP client API, we'll add
-  things judiciously.
-
-=== Alternatives
-
-There are several alternatives, `httpurr` tries to steal the best of each of them while having
-a promise-based API which no one offers.
-
-* **cljs-http**: Pretty popular and complete, uses CSP channels for responses. Implicitly
-  encodes and decodes data. It has some features like helpers for JSONP and auth that I may
-  eventually add to `httpurr`.
-* **cljs-ajax**: Works in both Clojure and ClojureScript. Implicitly encodes and decodes data.
-  Callback-based API.
-* **happy**: Encoding/decoding are explicit. Callback-based API. Works in both Clojure and
-  ClojureScript. Pluggable clients through global state mutation.
-
-All listed alternatives are licensed with EPL.
-
-== `httpurr.client`
+== User Guide
 
 `httpurr.client` is the namespace containing the functions to perform HTTP requests.
 
@@ -65,19 +38,19 @@ All listed alternatives are licensed with EPL.
 
 Requests are maps with the following keys:
 
-* `:method` is a keyword with the HTTP method to use. All valid HTTP methods are supported.
+* `:method` is a keyword with the HTTP method to use. All valid HTTP methods
+  are supported.
 * `:url` is the URL of the request
 * `:headers` is a map from strings to strings with the headers of the request.
-* `:body` is the body of the request. Everything that `goog.net.Xhr` accepts is fine.
+* `:body` is the body of the request.
 * `:query-string` is a string with the query part of the URL.
 
-==== `send!`
+`send!` is a function that, given a request map and optionally a map of options,
+performs the request and returns a promise that will be resolved if there is a
+response and rejected on timeout, exceptions, HTTP errors or aborts.
 
-`send!` is a function that, given a request map and optionally a map of options, performs the
-request and returns a promise that will be resolved if there is a response and rejected on
-timeout, exceptions, HTTP errors or aborts.
-
-Let's try to make a GET request using the XMLHttpRequest-based client that ships with `httpurr`:
+Let's try to make a GET request using the xhr-based client that ships
+with `httpurr`:
 
 [source, clojure]
 ----
@@ -86,29 +59,31 @@ Let's try to make a GET request using the XMLHttpRequest-based client that ships
 
 (http/send! client
             {:method :get
-             :url    "https://api.github.com/orgs/funcool"})
+             :url "https://api.github.com/orgs/funcool"})
 ----
 
-The options map accepts a `:timeout`, in miliseconds, after which the promise will be rejected
-with the `:timeout` keyword as a value.
+The options map accepts a `:timeout`, in miliseconds, after which the promise will
+be rejected with the `:timeout` keyword as a value.
 
-==== HTTP method facade
-
-The `httpurr.client` namespaces exposes `get`, `put`, `post`, `delete`, `head`, `options` and `trace`
-methods with identical signatures. They all accept the client as the first argument.
+Furthermore, the `httpurr.client` namespaces exposes `get`, `put`, `post`,
+`delete`, `head`, `options` and `trace` methods with identical signatures. They
+all accept the client as the first argument.
 
 These functions have three arities:
 
-- Two arguments the first is the client and the second is assumed to be the URL of the request.
-- Three arguments: like above and the third is the request map without the `:url` key.
-- Four arguments: like above and the fourth argument is an option map passed to `send!`.
+- Two arguments the first is the client and the second is assumed to be the URL
+  of the request.
+- Three arguments: like above and the third is the request map without the
+  `:url` key.
+- Four arguments: like above and the fourth argument is an option map passed
+  to `send!`.
 
-For convenience, client implementations provide aliases for the HTTP methods and the `send!` function:
+For convenience, client implementations provide aliases for the HTTP methods
+and the `send!` function:
 
 [source, clojure]
 ----
 (require '[httpurr.client.xhr :as http])
-
 (http/get "https://api.github.com/orgs/funcool")
 ----
 
@@ -120,19 +95,18 @@ Responses are maps with the following keys:
 * `:headers` is a map from strings to strings with the headers of the response.
 * `:body` is the body of the response.
 
-== `httpurr.status`
+=== Status Codes
 
-The `httpurr.status` namespace contains constants for HTTP codes and predicates for discerning the types of
-responses. They can help you make decissions about how to translate responses to either resolved or rejected
-promises.
+The `httpurr.status` namespace contains constants for HTTP codes and predicates for
+discerning the types of responses. They can help you make decissions about how to
+translate responses to either resolved or rejected promises.
 
-=== Discerning response types
+==== Discerning response types
 
-HTTP has 5 types of responses and `httpurr.status` provides predicates for checking wheter a response is of
-a certain type.
+HTTP has 5 types of responses and `httpurr.status` provides predicates for checking
+wheter a response is of a certain type.
 
-* For 1xx status codes the predicate is `informational?`
-
+.For 1xx status codes the predicate is `informational?`
 [source, clojure]
 ----
 (require '[httpurr.status :as s])
@@ -141,8 +115,7 @@ a certain type.
 ;; => true
 ----
 
-* For 2xx status codes the predicate is `success?`
-
+.For 2xx status codes the predicate is `success?`
 [source, clojure]
 ----
 (require '[httpurr.status :as s])
@@ -151,8 +124,7 @@ a certain type.
 ;; => true
 ----
 
-* For 3xx status codes the predicate is `redirection?`
-
+.For 3xx status codes the predicate is `redirection?`
 [source, clojure]
 ----
 (require '[httpurr.status :as s])
@@ -161,8 +133,7 @@ a certain type.
 ;; => true
 ----
 
-* For 4xx status codes the predicate is `client-error?`
-
+.For 4xx status codes the predicate is `client-error?`
 [source, clojure]
 ----
 (require '[httpurr.status :as s])
@@ -171,8 +142,7 @@ a certain type.
 ;; => true
 ----
 
-* For 5xx status codes the predicate is `server-error?`
-
+.For 5xx status codes the predicate is `server-error?`
 [source, clojure]
 ----
 (require '[httpurr.status :as s])
@@ -181,20 +151,21 @@ a certain type.
 ;; => true
 ----
 
-=== Checking status codes
+==== Checking status codes
 
-If you need more granularity you can always check for status codes in your responses and transform
-the promise accordingly.
+If you need more granularity you can always check for status codes in your
+responses and transform the promise accordingly.
 
-Let's say you're building an API client and you want to perform GET requests for the URL of an entity
-that can return:
+Let's say you're building an API client and you want to perform GET requests for
+the URL of an entity that can return:
 
 * 200 OK status code if everything went well
 * 404 not found if the requested entity wasn't found
 * 401 unauthorized when we don't have permission to read the resource
 
-We want to transform the promises by extracting the body of the 200 responses and, if we encounter a
-404 or 401, return a keyword denoting the type of error. Let's give it a go:
+We want to transform the promises by extracting the body of the 200 responses and,
+if we encounter a 404 or 401, return a keyword denoting the type of error. Let's
+give it a go:
 
 [source, clojure]
 ----
@@ -220,25 +191,27 @@ We want to transform the promises by extracting the body of the 200 responses an
 
 == Error handling
 
-The link:http://funcool.github.io/promesa/latest/[Promesa docs] explain all the possible combinators
-for working with promises. We've already used `then` for processing responses, let's look at two
-other useful functions: `catch` and `branch`.
+The link:http://funcool.github.io/promesa/latest/[Promesa docs] explain all the
+possible combinators for working with promises. We've already used `then` for
+processing responses, let's look at two other useful functions: `catch` and `branch`.
 
-If we want to attach an error handler to the promise we can use the `catch` function. Let's rewrite
-our previous `entity` function for handling the error case. We'll just log the error to the console,
-you may want to use a better error handling in your code.
+If we want to attach an error handler to the promise we can use the `catch`
+function. Let's rewrite our previous `entity` function for handling the error case.
+We'll just log the error to the console, you may want to use a better error
+handling in your code.
 
 [source, clojure]
 ----
-(defn entity [id]
+(defn entity
+  [id]
   (-> (p/then (xhr/get (id->url id))
               process-response)
       (p/catch (fn [err]
                  (.error js/console err)))))
 ----
 
-For cases when we want to attach both a success and error handler to a promise we can use the `branch`
-function:
+For cases when we want to attach both a success and error handler to a promise we
+can use the `branch` function:
 
 [source, clojure]
 ----
@@ -252,8 +225,8 @@ function:
 
 == Implementing your own client
 
-The functions in `httpurr.client` are based on abstractions defined as protocols in `httpurr.protocols` so
-you can implement our own clients.
+The functions in `httpurr.client` are based on abstractions defined as protocols
+in `httpurr.protocols` so you can implement our own clients.
 
 The following protocols are defined in `httpurr.protocols`:
 
@@ -264,17 +237,17 @@ The following protocols are defined in `httpurr.protocols`:
 
 Take a look at the XHR client at `httpurr.client.xhr` for reference.
 
-Note that the requests passed to the clients have a escaped URL generated as their `:url` value, inferred
-from the `:url` and `:query-string` from the original requests before being passed to the protocol's
-`send!` function.
+Note that the requests passed to the clients have a escaped URL generated as
+their `:url` value, inferred from the `:url` and `:query-string` from the original
+requests before being passed to the protocol's `send!` function.
 
 == Examples
 
 === Encoding/Decoding
 
-Since requests and responses are plain maps, we can write simple encoding/decoding function
-and modify request and responses appropiately. For example, let's write a decoder function
-that converts JSON payloads to ClojureScript data structures:
+Since requests and responses are plain maps, we can write simple encoding/decoding
+function and modify request and responses appropiately. For example, let's write
+a decoder function that converts JSON payloads to ClojureScript data structures:
 
 [source, clojure]
 ----
@@ -308,7 +281,8 @@ that converts JSON payloads to ClojureScript data structures:
 ;;   "Access-Control-Allow-Credentials" "true"}}
 ----
 
-Encoding can be achieved similarly applying the map transforming function to requests before sending them:
+Encoding can be achieved similarly applying the map transforming function to
+requests before sending them:
 
 [source, clojure]
 ----
@@ -345,9 +319,9 @@ Encoding can be achieved similarly applying the map transforming function to req
 
 === Auth
 
-The `httpur.auth` namespace contains the `basic` function for basic authentication. It
-accepts a realm, user and a password and returns a function that can be applied to a request
-for adding the basic auth headers:
+The `httpur.auth` namespace contains the `basic` function for basic authentication.
+It accepts a realm, user and a password and returns a function that can be applied
+to a request for adding the basic auth headers:
 
 [source, clojure]
 ----
@@ -387,8 +361,9 @@ A similar approach can be followed for implementing other authentication schemes
 
 ==== Browser
 
-For sending form data you need to send the `FormData` instance as the body of the request. Let's send
-a form to the httbin.org site and confirm that the form is sent correctly.
+For sending form data you need to send the `FormData` instance as the body of
+the request. Let's send a form to the httbin.org site and confirm that the form
+is sent correctly.
 
 [source, clojure]
 ----
@@ -418,12 +393,57 @@ a form to the httbin.org site and confirm that the form is sent correctly.
 ;; :content-type multipart/form-data; boundary=----WebKitFormBoundaryg4VACYY9tWU91kvn
 ----
 
+
+== FAQ
+
+=== Why another library?
+
+There are plenty of HTTP client libraries available, each with its own design
+decisions. Here are the ones made for `httpurr`.
+
+* Promises are a natural fit for the request-response nature of HTTP. They
+  contain either an eventual value (the response) or an error value. CSP channels
+  lack first class errors and callbacks/errbacks are cumbersome to compose.
+  `httpurr` uses link:https://github.com/funcool/promesa[promesa] to provide a
+  cross-platform promise type and API.
+* A data based API, requests and responses are just maps. This makes easy to
+  create and transform requests piping various transformations together and the
+  same is true for responses.
+* No automatic encoding/decoding based on content type, it sits at a lower level.
+  Is your responsibility to encode and decode data, `httpurr` just speaks HTTP.
+* No automatic generation of query strings. There is no consensus on how to use
+  query params for things like collection and don't want to make the choice for you.
+* Constants with every HTTP status code, sets of status codes and predicates for
+  discerning response types.
+* Pluggable client implementation. Currently `httpurr` ships with an
+  XHR-based client for the browser, a node client, and a aleph client for Clojure.
+* Intended as a infrastructure lib that sits at the bottom of your HTTP client API,
+  we'll add things judiciously.
+
+
+=== Alternatives?
+
+There are several alternatives, `httpurr` tries to steal the best of each of them
+while having a promise-based API which no one offers.
+
+* **cljs-http**: Pretty popular and complete, uses CSP channels for responses.
+  Implicitly encodes and decodes data. It has some features like helpers for
+  JSONP and auth that I may eventually add to `httpurr`.
+* **cljs-ajax**: Works in both Clojure and ClojureScript. Implicitly encodes
+  and decodes data. Callback-based API.
+* **happy**: Encoding/decoding are explicit. Callback-based API. Works in
+  both Clojure and ClojureScript. Pluggable clients through global state mutation.
+
+All listed alternatives are licensed with EPL.
+
+
 == Developers Guide
 
 === Contributing
 
 Unlike Clojure and other Clojure contrib libs, does not have many restrictions for
 contributions. Just open a issue or pull request.
+
 
 === Get the Code
 
@@ -437,6 +457,7 @@ You can clone the public repository with this command:
 git clone https://github.com/funcool/httpurr
 ----
 
+
 === Run tests
 
 To run the tests execute the following:
@@ -447,7 +468,7 @@ To run the tests execute the following:
 node out/tests.js
 ----
 
-You will need to have nodejs or iojs installed on your system.
+You will need to have nodejs installed on your system.
 
 
 === License
