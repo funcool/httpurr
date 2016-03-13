@@ -1,4 +1,4 @@
-(ns httpurr.generators
+(ns httpurr.test.generators
   (:require
    [clojure.test.check.generators :as gen]
    [httpurr.status :as http]))

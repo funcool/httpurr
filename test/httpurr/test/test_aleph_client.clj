@@ -1,4 +1,4 @@
-(ns httpurr.test.client-test
+(ns httpurr.test.test-aleph-client
   (:require [clojure.test :as t]
             [byte-streams :as bs]
             [httpurr.client :as http]
@@ -7,29 +7,32 @@
             [aleph.http :as ahttp]
             [promesa.core :as p]))
 
-(def last-request (atom nil))
+;; helpers
 
-(defn send!
+(def ^:private last-request (atom nil))
+
+(defn- send!
   [request]
   (http/send! a/client request))
 
-(defn handler
-  [request]
-  (reset! last-request request)
-  {:status 200
-   :body (if-let [body (:body request)]
-           (pr-str (update request :body bs/to-string))
-           (pr-str request))
-   :content-type "text/plain"})
+(defn- test-handler
+  [{:keys [body] :as request}]
+  (let [request (merge request (when body {:body (bs/to-string body)}))]
+    (reset! last-request request)
+    (if (= (:body request) "error")
+      {:status 400
+       :body (:body request)
+       :content-type "text/plain"}
+      {:status 200
+       :body (:body request)
+       :content-type "text/plain"})))
 
-(def port (atom 0))
-
-(defonce server
-  (ahttp/start-server handler {:port 0}))
-
+(def ^:private port (atom 0))
+(defonce ^:private server
+  (ahttp/start-server test-handler {:port 0}))
 (reset! port (.port server))
 
-(defn make-uri
+(defn- make-uri
   [path]
   (let [p @port]
     (str "http://localhost:" p path)))
@@ -129,13 +132,8 @@
           {:keys [request-method
                   headers]} @last-request
           sent-headers (:headers req)]
-      (t/is (= request-method :post))
-      (t/is (= (-> response
-                 :body
-                 slurp
-                 read-string
-                 :body)
-               content)))))
+      (t/is (= :post (:request-method @last-request))
+      (t/is (= content (slurp (:body response))))))))
 
 (t/deftest send-returns-a-promise
   (let [path "/funcool/cats"
@@ -151,8 +149,22 @@
         req {:method :get
              :url url}
         resp @(send! req)]
-    (let [{:keys [status body headers]} resp
-          request (read-string (slurp body))]
-      (t/is (= 200 status))
-      (t/is (= (:request-method request) :get))
-      (t/is (= (:uri request) path)))))
+    (t/is (= 200 (:status resp)))
+    (t/is (= :get (:request-method @last-request)))
+    (t/is (= path (:uri @last-request)))))
+
+(t/deftest send-returns-response-failure
+  (let [path "/funcool/cats"
+        url (make-uri path)
+        req {:method :post
+             :body "error"
+             :url url}]
+    (try
+      @(send! req)
+      (throw (Exception. "unexpected"))
+      (catch java.util.concurrent.ExecutionException error
+        (let [error (.getCause error)
+              resp (ex-data error)]
+          (t/is (= 400 (:status resp)))
+          (t/is (= :post (:request-method @last-request)))
+          (t/is (= path (:uri @last-request))))))))

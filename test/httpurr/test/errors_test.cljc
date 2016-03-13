@@ -1,4 +1,4 @@
-(ns httpurr.test.errors-test
+(ns httpurr.test.test-errors
   (:require
    #?(:clj
       [clojure.test :as t]

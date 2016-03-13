@@ -1,4 +1,4 @@
-(ns httpurr.test.client-test
+(ns httpurr.test.test-xhr-client
   (:require [cljs.test :as t]
             [httpurr.client :as http]
             [httpurr.errors :as e]
@@ -154,6 +154,24 @@
             status 200]
         (.simulateResponse xhr status))))
 
+(t/deftest body-and-headers-in-response-with-error
+  (t/async done
+    (let [url "http://www.github.com/funcool/cats"
+          req {:method :get
+               :url url
+               :headers {}}
+          resp (send! req)]
+      (p/catch resp (fn [{:keys [status body headers]}]
+                      (t/is (= status 400))
+                      (t/is (= body "blablala"))
+                      (t/is (= headers {"Content-Type" "text/plain"}))
+                      (done))))
+      (let [xhr (raw-last-request)
+            status 400
+            body "blablala"
+            headers #js {"Content-Type" "text/plain"}]
+        (.simulateResponse xhr status body headers))))
+
 (t/deftest body-and-headers-in-response
   (t/async done
     (let [url "http://www.github.com/funcool/cats"
@@ -172,6 +190,8 @@
             headers #js {"Content-Type" "text/plain"}]
         (.simulateResponse xhr status body headers))))
 
+
+
 ;; note: XhrIo mock doesn't respect timeouts
 #_(t/deftest send-request-fails-if-expired-timeout
   (t/async done
@@ -189,8 +209,8 @@
     (let [url "http://www.github.com/funcool/cats"
           req {:method :get :url url :headers {}}
           resp (send! req)]
-      (p/catch resp (fn [err]
-                      (t/is (= err e/timeout))
+      (p/catch resp (fn [response]
+                      (t/is (= (:error response) e/timeout))
                       (done)))
       (let [xhr (raw-last-request)]
         (.simulateTimeout xhr)))))
@@ -202,7 +222,7 @@
                :url url
                :headers {}}
           resp (send! req)]
-      (p/finally resp (fn [err]
+      (p/finally resp (fn [response]
                         (t/is (p/cancelled? resp))
                         (done)))
       (p/catch (p/cancel! resp) (constantly nil)))))
