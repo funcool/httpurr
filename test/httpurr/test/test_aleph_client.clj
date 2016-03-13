@@ -157,13 +157,8 @@
         url (make-uri path)
         req {:method :post
              :body "error"
-             :url url}]
-    (try
-      @(send! req)
-      (throw (Exception. "unexpected"))
-      (catch java.util.concurrent.ExecutionException error
-        (let [error (.getCause error)
-              resp (ex-data error)]
-          (t/is (= 400 (:status resp)))
-          (t/is (= :post (:request-method @last-request)))
-          (t/is (= path (:uri @last-request))))))))
+             :url url}
+        resp  @(send! req)]
+    (t/is (= 400 (:status resp)))
+    (t/is (= :post (:request-method @last-request)))
+    (t/is (= path (:uri @last-request)))))

@@ -160,7 +160,7 @@
                :url url
                :headers {}}
           resp (send! req)]
-      (p/catch resp (fn [{:keys [status body headers]}]
+      (p/then resp (fn [{:keys [status body headers]}]
                       (t/is (= status 400))
                       (t/is (= body "blablala"))
                       (t/is (= headers {"Content-Type" "text/plain"}))
@@ -189,8 +189,6 @@
             headers #js {"Content-Type" "text/plain"}]
         (.simulateResponse xhr status body headers))))
 
-
-
 ;; note: XhrIo mock doesn't respect timeouts
 #_(t/deftest send-request-fails-if-expired-timeout
   (t/async done
@@ -208,8 +206,8 @@
     (let [url "http://www.github.com/funcool/cats"
           req {:method :get :url url :headers {}}
           resp (send! req)]
-      (p/catch resp (fn [response]
-                      (t/is (= (:error response) e/timeout))
+      (p/catch resp (fn [err]
+                      (t/is (= err :timeout))
                       (done)))
       (let [xhr (raw-last-request)]
         (.simulateTimeout xhr)))))

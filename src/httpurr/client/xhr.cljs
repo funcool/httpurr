@@ -10,12 +10,18 @@
 
 (def ^:dynamic *xhr-impl* XhrIo)
 
+(defn- translate-error-code
+  [code]
+  (condp = code
+    ErrorCode.TIMEOUT    :timeout
+    ErrorCode.EXCEPTION  :exception
+    ErrorCode.HTTP_ERROR :http
+    ErrorCode.ABORT      :abort))
+
 (deftype Xhr [xhr]
   p/Request
   (-listen [_ cb]
-    (events/listen xhr EventType.COMPLETE
-                   (fn [ev]
-                     (cb (Xhr. xhr)))))
+    (events/listen xhr EventType.COMPLETE #(cb (Xhr. xhr))))
 
   p/Abort
   (-abort [_]
@@ -23,7 +29,9 @@
 
   p/Response
   (-success? [_]
-    (.isSuccess xhr))
+    (or (.isSuccess xhr)
+        (let [code (.getLastErrorCode xhr)]
+          (= code ErrorCode.HTTP_ERROR))))
 
   (-response [_]
     {:status  (.getStatus xhr)
@@ -31,13 +39,8 @@
      :headers (js->clj (.getResponseHeaders xhr))})
 
   (-error [this]
-    (let [response (p/-response this)]
-      (assoc response :error
-             (condp = (.getLastErrorCode xhr)
-               ErrorCode.TIMEOUT    e/timeout
-               ErrorCode.EXCEPTION  e/exception
-               ErrorCode.HTTP_ERROR e/http-error
-               ErrorCode.ABORT      e/abort)))))
+    (-> (.getLastErrorCode xhr)
+        (translate-error-code))))
 
 (def client
   (reify p/Client

@@ -6,6 +6,11 @@
             [httpurr.protocols :as p]
             [httpurr.status :as s]))
 
+(defn- response?
+  [data]
+  (and (map? data)
+       (s/status-code? (:status data 0))))
+
 (defn- success
   [response]
   (reify
@@ -15,10 +20,13 @@
 
 (defn- error
   [err]
-  (reify
-    p/Response
-    (-success? [_] false)
-    (-error [_] err)))
+  (let [data (ex-data err)]
+    (if (response? data)
+      (success data)
+      (reify
+        p/Response
+        (-success? [_] false)
+        (-error [_] err)))))
 
 (defn deferred->http
   [d]
