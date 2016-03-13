@@ -31,12 +31,14 @@
      :body    (.getResponse xhr)
      :headers (js->clj (.getResponseHeaders xhr))})
 
-  (-error [_]
-    (condp = (.getLastErrorCode xhr)
-      ErrorCode.TIMEOUT    e/timeout
-      ErrorCode.EXCEPTION  e/exception
-      ErrorCode.HTTP_ERROR e/http-error
-      ErrorCode.ABORT      e/abort)))
+  (-error [this]
+    (let [response (p/-response this)]
+      (assoc response :error
+             (condp = (.getLastErrorCode xhr)
+               ErrorCode.TIMEOUT    e/timeout
+               ErrorCode.EXCEPTION  e/exception
+               ErrorCode.HTTP_ERROR e/http-error
+               ErrorCode.ABORT      e/abort)))))
 
 (def client
   (reify p/Client
