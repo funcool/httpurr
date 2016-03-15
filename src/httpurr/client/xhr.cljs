@@ -3,12 +3,17 @@
   (:require [httpurr.client :as c]
             [httpurr.client.util :as util]
             [httpurr.protocols :as p]
-            [goog.events :as events])
+            [goog.events :as events]
+            [clojure.walk :as walk])
   (:import goog.net.ErrorCode
            goog.net.EventType
            goog.net.XhrIo))
 
 (def ^:dynamic *xhr-impl* XhrIo)
+
+(defn normalize-headers
+  [headers]
+  (reduce-kv (fn [acc k v] (assoc acc (.toLowerCase k) v)) {} headers))
 
 (defn- translate-error-code
   [code]
@@ -36,7 +41,9 @@
   (-response [_]
     {:status  (.getStatus xhr)
      :body    (.getResponse xhr)
-     :headers (js->clj (.getResponseHeaders xhr))})
+     :headers (-> (.getResponseHeaders xhr)
+                  (js->clj)
+                  (normalize-headers))})
 
   (-error [this]
     (-> (.getLastErrorCode xhr)

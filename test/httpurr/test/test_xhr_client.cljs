@@ -16,7 +16,8 @@
   (let [r (raw-last-request)]
     {:method  (.getLastMethod r)
      :uri     (.toString (.getLastUri r))
-     :headers (js->clj (.getLastRequestHeaders r))
+     :headers (xhr/normalize-headers
+               (js->clj (.getLastRequestHeaders r)))
      :body    (.getLastContent r)}))
 
 (defn cleanup
@@ -88,7 +89,7 @@
   (let [url "http://www.github.com/funcool/promesa"
         req {:method :get
              :url url
-             :headers {"Content-Type" "application/json"}}]
+             :headers {"content-type" "application/json"}}]
 
     (send! req)
 
@@ -103,8 +104,8 @@
   (let [url "http://www.github.com/funcool/promesa"
         req {:method :get
              :url url
-             :headers {"Content-Length" 42
-                       "Content-Encoding" "gzip"}}]
+             :headers {"content-length" 42
+                       "content-encoding" "gzip"}}]
     (send! req)
 
     (let [{:keys [headers]} (last-request)]
@@ -116,8 +117,8 @@
         ctype "text/plain"
         req {:method :post
              :url url
-             :headers {"Content-Length" 42
-                       "Content-Encoding" "gzip"}
+             :headers {"content-length" 42
+                       "content-encoding" "gzip"}
              :body content}]
     (send! req)
     (let [{:keys [method
@@ -163,12 +164,12 @@
       (p/then resp (fn [{:keys [status body headers]}]
                       (t/is (= status 400))
                       (t/is (= body "blablala"))
-                      (t/is (= headers {"Content-Type" "text/plain"}))
+                      (t/is (= headers {"content-type" "text/plain"}))
                       (done))))
       (let [xhr (raw-last-request)
             status 400
             body "blablala"
-            headers #js {"Content-Type" "text/plain"}]
+            headers #js {"content-type" "text/plain"}]
         (.simulateResponse xhr status body headers))))
 
 (t/deftest body-and-headers-in-response
@@ -181,12 +182,12 @@
       (p/then resp (fn [{:keys [status body headers]}]
                      (t/is (= status 200))
                      (t/is (= body "blablala"))
-                     (t/is (= headers {"Content-Type" "text/plain"}))
+                     (t/is (= headers {"content-type" "text/plain"}))
                      (done))))
       (let [xhr (raw-last-request)
             status 200
             body "blablala"
-            headers #js {"Content-Type" "text/plain"}]
+            headers #js {"content-type" "text/plain"}]
         (.simulateResponse xhr status body headers))))
 
 ;; note: XhrIo mock doesn't respect timeouts
