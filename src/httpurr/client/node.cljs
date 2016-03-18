@@ -5,6 +5,7 @@
             [httpurr.protocols :as p]))
 
 (def ^:private http (js/require "http"))
+(def ^:private https (js/require "https"))
 (def ^:private url (js/require "url"))
 
 (defn url->options
@@ -71,9 +72,10 @@
       (let [{:keys [method url headers body]} request
             method (c/keyword->method method)
             headers (prepare-headers headers)
-            options (merge {:method method :headers headers}
-                           (url->options url))
-            req (.request http (clj->js options))]
+            parsed-url (url->options url)
+            https? (= "https:" (:protocol parsed-url))
+            options (merge {:method method :headers headers} parsed-url)
+            req (.request (if https? https http) (clj->js options))]
         (.setTimeout req timeout)
         (when body
           (.write req body))
