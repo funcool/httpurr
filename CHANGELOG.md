@@ -2,10 +2,12 @@
 
 ## Version 0.5.0 ##
 
-Date: unreleased
+Date: 2016-03-28
 
 - Clojure compatibility
 - An aleph-based Clojure client on `httpurr.client.aleph`
+- Many bugfixes on xhr client.
+
 
 ## Version 0.3.0 ##
 
