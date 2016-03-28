@@ -4,10 +4,10 @@
   :license {:name "Public Domain" :url "http://unlicense.org"}
   :source-paths ["src"]
   :dependencies [[org.clojure/clojure "1.8.0" :scope "provided"]
-                 [org.clojure/clojurescript "1.7.228" :scope "provided"]
+                 [org.clojure/clojurescript "1.8.40" :scope "provided"]
                  [aleph "0.4.1-beta4" :scope "provided"]
                  [org.clojure/test.check "0.9.0" :scope "test"]
-                 [funcool/promesa "0.8.1"]]
+                 [funcool/promesa "1.1.1"]]
 
   :profiles
   {:dev
