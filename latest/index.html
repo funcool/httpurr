@@ -80,26 +80,22 @@
 <h1>httpurr</h1>
 <div class="details">
 <span id="author" class="author">Funcool</span><br>
-<span id="revdate">0.4.0</span>
+<span id="revdate">0.5.0</span>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
 <ul class="sectlevel1">
-<li><a href="#why-another-library">Why another library?</a>
+<li><a href="#introduction">Introduction</a>
 <ul class="sectlevel2">
-<li><a href="#alternatives">Alternatives</a></li>
+<li><a href="#project-maturity">Project Maturity</a></li>
+<li><a href="#install">Install</a></li>
 </ul>
 </li>
-<li><a href="#code-httpurr-client-code"><code>httpurr.client</code></a>
+<li><a href="#user-guide">User Guide</a>
 <ul class="sectlevel2">
 <li><a href="#requests">Requests</a></li>
 <li><a href="#responses">Responses</a></li>
-</ul>
-</li>
-<li><a href="#code-httpurr-status-code"><code>httpurr.status</code></a>
-<ul class="sectlevel2">
-<li><a href="#discerning-response-types">Discerning response types</a></li>
-<li><a href="#checking-status-codes">Checking status codes</a></li>
+<li><a href="#status-codes">Status Codes</a></li>
 </ul>
 </li>
 <li><a href="#error-handling">Error handling</a></li>
@@ -109,6 +105,12 @@
 <li><a href="#encoding-decoding">Encoding/Decoding</a></li>
 <li><a href="#auth">Auth</a></li>
 <li><a href="#sending-form-data">Sending form data</a></li>
+</ul>
+</li>
+<li><a href="#faq">FAQ</a>
+<ul class="sectlevel2">
+<li><a href="#why-another-library">Why another library?</a></li>
+<li><a href="#alternatives">Alternatives?</a></li>
 </ul>
 </li>
 <li><a href="#developers-guide">Developers Guide</a>
@@ -123,90 +125,34 @@
 </div>
 </div>
 <div id="content">
-<div id="preamble">
-<div class="sectionbody">
-<div class="paragraph">
-<p>A ring-inspired, promise-returning, <strong>simple</strong> ClojureScript HTTP client.</p>
-</div>
-</div>
-</div>
 <div class="sect1">
-<h2 id="why-another-library"><a class="link" href="#why-another-library">Why another library?</a></h2>
+<h2 id="introduction"><a class="link" href="#introduction">Introduction</a></h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>There are plenty of HTTP client libraries available, each with its own design decisions. Here
-are the ones made for <code>httpurr</code>.</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p>Promises are a natural fit for the request-response nature of HTTP. They contain either
-an eventual value (the response) or an error value. CSP channels lack first class errors
-and callbacks/errbacks are cumbersome to compose.
-<code>httpurr</code> uses <a href="https://github.com/funcool/promesa">promesa</a>, a wrapper around the
-performant Bluebird JS library which implements the Applicative and Monad protocols of
-<a href="https://github.com/funcool/cats">cats</a>. This means that you have core.async
-like syntax with <code>cats.core/mlet</code> and, if you want to maximize concurrency, applicative
-composition of promises with <code>cats.core/alet</code>.</p>
-</li>
-<li>
-<p>A data based API, requests and responses are just maps. This makes easy to create and
-transform requests piping various transformations together and the same is true for responses.</p>
-</li>
-<li>
-<p>No automatic encoding/decoding based on content type, it sits at a lower level. Is your
-responsibility to encode and decode data, <code>httpurr</code> just speaks HTTP.</p>
-</li>
-<li>
-<p>No automatic generation of query strings. There is no consensus on how to use query params
-for things like collection and don&#8217;t want to make the choice for you. <code>httpurr</code> uses <code>goog.net.Uri</code>
-internally so your URLs will be correctly encoded.</p>
-</li>
-<li>
-<p>Constants with every HTTP status code, sets of status codes and predicates for discerning response
-types.</p>
-</li>
-<li>
-<p>Pluggable client implementation. Currently <code>httpurr</code> ships with an Xhr-based client for the
-browser and a node client.</p>
-</li>
-<li>
-<p>Intended as a infrastructure lib that sits at the bottom of your HTTP client API, we&#8217;ll add
-things judiciously.</p>
-</li>
-</ul>
+<p>A ring-inspired, promise-returning, <strong>simple</strong> Clojure(Script) HTTP client.</p>
 </div>
 <div class="sect2">
-<h3 id="alternatives"><a class="link" href="#alternatives">Alternatives</a></h3>
+<h3 id="project-maturity"><a class="link" href="#project-maturity">Project Maturity</a></h3>
 <div class="paragraph">
-<p>There are several alternatives, <code>httpurr</code> tries to steal the best of each of them while having
-a promise-based API which no one offers.</p>
+<p>Since <em>httpurr</em> is a young project there can be some API breakage.</p>
 </div>
-<div class="ulist">
-<ul>
-<li>
-<p><strong>cljs-http</strong>: Pretty popular and complete, uses CSP channels for responses. Implicitly
-encodes and decodes data. It has some features like helpers for JSONP and auth that I may
-eventually add to <code>httpurr</code>.</p>
-</li>
-<li>
-<p><strong>cljs-ajax</strong>: Works in both Clojure and ClojureScript. Implicitly encodes and decodes data.
-Callback-based API.</p>
-</li>
-<li>
-<p><strong>happy</strong>: Encoding/decoding are explicit. Callback-based API. Works in both Clojure and
-ClojureScript. Pluggable clients through global state mutation.</p>
-</li>
-</ul>
 </div>
+<div class="sect2">
+<h3 id="install"><a class="link" href="#install">Install</a></h3>
 <div class="paragraph">
-<p>All listed alternatives are licensed with EPL.</p>
+<p>The simplest way to use <em>httpurr</em> in a clojure project, is by including it in the
+dependency vector on your <strong><em>project.clj</em></strong> file:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="clojure"><span class="tok-p">[</span><span class="tok-nv">funcool/httpurr</span> <span class="tok-s">&quot;0.5.0&quot;</span><span class="tok-p">]</span></code></pre>
+</div>
 </div>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="code-httpurr-client-code"><a class="link" href="#code-httpurr-client-code"><code>httpurr.client</code></a></h2>
+<h2 id="user-guide"><a class="link" href="#user-guide">User Guide</a></h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p><code>httpurr.client</code> is the namespace containing the functions to perform HTTP requests.</p>
@@ -219,7 +165,8 @@ ClojureScript. Pluggable clients through global state mutation.</p>
 <div class="ulist">
 <ul>
 <li>
-<p><code>:method</code> is a keyword with the HTTP method to use. All valid HTTP methods are supported.</p>
+<p><code>:method</code> is a keyword with the HTTP method to use. All valid HTTP methods
+are supported.</p>
 </li>
 <li>
 <p><code>:url</code> is the URL of the request</p>
@@ -228,22 +175,21 @@ ClojureScript. Pluggable clients through global state mutation.</p>
 <p><code>:headers</code> is a map from strings to strings with the headers of the request.</p>
 </li>
 <li>
-<p><code>:body</code> is the body of the request. Everything that <code>goog.net.Xhr</code> accepts is fine.</p>
+<p><code>:body</code> is the body of the request.</p>
 </li>
 <li>
 <p><code>:query-string</code> is a string with the query part of the URL.</p>
 </li>
 </ul>
 </div>
-<div class="sect3">
-<h4 id="code-send-code"><a class="link" href="#code-send-code"><code>send!</code></a></h4>
 <div class="paragraph">
-<p><code>send!</code> is a function that, given a request map and optionally a map of options, performs the
-request and returns a promise that will be resolved if there is a response and rejected on
-timeout, exceptions, HTTP errors or aborts.</p>
+<p><code>send!</code> is a function that, given a request map and optionally a map of options,
+performs the request and returns a promise that will be resolved if there is a
+response and rejected on timeout, exceptions, HTTP errors or aborts.</p>
 </div>
 <div class="paragraph">
-<p>Let&#8217;s try to make a GET request using the XMLHttpRequest-based client that ships with <code>httpurr</code>:</p>
+<p>Let&#8217;s try to make a GET request using the xhr-based client that ships
+with <code>httpurr</code>:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -252,19 +198,17 @@ timeout, exceptions, HTTP errors or aborts.</p>
 
 <span class="tok-p">(</span><span class="tok-nf">http/send!</span> <span class="tok-nv">client</span>
             <span class="tok-p">{</span><span class="tok-ss">:method</span> <span class="tok-ss">:get</span>
-             <span class="tok-ss">:url</span>    <span class="tok-s">&quot;https://api.github.com/orgs/funcool&quot;</span><span class="tok-p">})</span></code></pre>
+             <span class="tok-ss">:url</span> <span class="tok-s">&quot;https://api.github.com/orgs/funcool&quot;</span><span class="tok-p">})</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>The options map accepts a <code>:timeout</code>, in miliseconds, after which the promise will be rejected
-with the <code>:timeout</code> keyword as a value.</p>
+<p>The options map accepts a <code>:timeout</code>, in miliseconds, after which the promise will
+be rejected with the <code>:timeout</code> keyword as a value.</p>
 </div>
-</div>
-<div class="sect3">
-<h4 id="http-method-facade"><a class="link" href="#http-method-facade">HTTP method facade</a></h4>
 <div class="paragraph">
-<p>The <code>httpurr.client</code> namespaces exposes <code>get</code>, <code>put</code>, <code>post</code>, <code>delete</code>, <code>head</code>, <code>options</code> and <code>trace</code>
-methods with identical signatures. They all accept the client as the first argument.</p>
+<p>Furthermore, the <code>httpurr.client</code> namespaces exposes <code>get</code>, <code>put</code>, <code>post</code>,
+<code>delete</code>, <code>head</code>, <code>options</code> and <code>trace</code> methods with identical signatures. They
+all accept the client as the first argument.</p>
 </div>
 <div class="paragraph">
 <p>These functions have three arities:</p>
@@ -272,25 +216,27 @@ methods with identical signatures. They all accept the client as the first argum
 <div class="ulist">
 <ul>
 <li>
-<p>Two arguments the first is the client and the second is assumed to be the URL of the request.</p>
+<p>Two arguments the first is the client and the second is assumed to be the URL
+of the request.</p>
 </li>
 <li>
-<p>Three arguments: like above and the third is the request map without the <code>:url</code> key.</p>
+<p>Three arguments: like above and the third is the request map without the
+<code>:url</code> key.</p>
 </li>
 <li>
-<p>Four arguments: like above and the fourth argument is an option map passed to <code>send!</code>.</p>
+<p>Four arguments: like above and the fourth argument is an option map passed
+to <code>send!</code>.</p>
 </li>
 </ul>
 </div>
 <div class="paragraph">
-<p>For convenience, client implementations provide aliases for the HTTP methods and the <code>send!</code> function:</p>
+<p>For convenience, client implementations provide aliases for the HTTP methods
+and the <code>send!</code> function:</p>
 </div>
 <div class="listingblock">
 <div class="content">
 <pre class="pygments highlight"><code data-lang="clojure"><span class="tok-p">(</span><span class="tok-nf">require</span> <span class="tok-o">&#39;</span><span class="tok-p">[</span><span class="tok-nv">httpurr.client.xhr</span> <span class="tok-ss">:as</span> <span class="tok-nv">http</span><span class="tok-p">])</span>
-
 <span class="tok-p">(</span><span class="tok-nf">http/get</span> <span class="tok-s">&quot;https://api.github.com/orgs/funcool&quot;</span><span class="tok-p">)</span></code></pre>
-</div>
 </div>
 </div>
 </div>
@@ -313,30 +259,21 @@ methods with identical signatures. They all accept the client as the first argum
 </ul>
 </div>
 </div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="code-httpurr-status-code"><a class="link" href="#code-httpurr-status-code"><code>httpurr.status</code></a></h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>The <code>httpurr.status</code> namespace contains constants for HTTP codes and predicates for discerning the types of
-responses. They can help you make decissions about how to translate responses to either resolved or rejected
-promises.</p>
-</div>
 <div class="sect2">
-<h3 id="discerning-response-types"><a class="link" href="#discerning-response-types">Discerning response types</a></h3>
+<h3 id="status-codes"><a class="link" href="#status-codes">Status Codes</a></h3>
 <div class="paragraph">
-<p>HTTP has 5 types of responses and <code>httpurr.status</code> provides predicates for checking wheter a response is of
-a certain type.</p>
+<p>The <code>httpurr.status</code> namespace contains constants for HTTP codes and predicates for
+discerning the types of responses. They can help you make decissions about how to
+translate responses to either resolved or rejected promises.</p>
 </div>
-<div class="ulist">
-<ul>
-<li>
-<p>For 1xx status codes the predicate is <code>informational?</code></p>
-</li>
-</ul>
+<div class="sect3">
+<h4 id="discerning-response-types"><a class="link" href="#discerning-response-types">Discerning response types</a></h4>
+<div class="paragraph">
+<p>HTTP has 5 types of responses and <code>httpurr.status</code> provides predicates for checking
+wheter a response is of a certain type.</p>
 </div>
 <div class="listingblock">
+<div class="title">For 1xx status codes the predicate is <code>informational?</code></div>
 <div class="content">
 <pre class="pygments highlight"><code data-lang="clojure"><span class="tok-p">(</span><span class="tok-nf">require</span> <span class="tok-o">&#39;</span><span class="tok-p">[</span><span class="tok-nv">httpurr.status</span> <span class="tok-ss">:as</span> <span class="tok-nv">s</span><span class="tok-p">])</span>
 
@@ -344,14 +281,8 @@ a certain type.</p>
 <span class="tok-c1">;; =&gt; true</span></code></pre>
 </div>
 </div>
-<div class="ulist">
-<ul>
-<li>
-<p>For 2xx status codes the predicate is <code>success?</code></p>
-</li>
-</ul>
-</div>
 <div class="listingblock">
+<div class="title">For 2xx status codes the predicate is <code>success?</code></div>
 <div class="content">
 <pre class="pygments highlight"><code data-lang="clojure"><span class="tok-p">(</span><span class="tok-nf">require</span> <span class="tok-o">&#39;</span><span class="tok-p">[</span><span class="tok-nv">httpurr.status</span> <span class="tok-ss">:as</span> <span class="tok-nv">s</span><span class="tok-p">])</span>
 
@@ -359,14 +290,8 @@ a certain type.</p>
 <span class="tok-c1">;; =&gt; true</span></code></pre>
 </div>
 </div>
-<div class="ulist">
-<ul>
-<li>
-<p>For 3xx status codes the predicate is <code>redirection?</code></p>
-</li>
-</ul>
-</div>
 <div class="listingblock">
+<div class="title">For 3xx status codes the predicate is <code>redirection?</code></div>
 <div class="content">
 <pre class="pygments highlight"><code data-lang="clojure"><span class="tok-p">(</span><span class="tok-nf">require</span> <span class="tok-o">&#39;</span><span class="tok-p">[</span><span class="tok-nv">httpurr.status</span> <span class="tok-ss">:as</span> <span class="tok-nv">s</span><span class="tok-p">])</span>
 
@@ -374,14 +299,8 @@ a certain type.</p>
 <span class="tok-c1">;; =&gt; true</span></code></pre>
 </div>
 </div>
-<div class="ulist">
-<ul>
-<li>
-<p>For 4xx status codes the predicate is <code>client-error?</code></p>
-</li>
-</ul>
-</div>
 <div class="listingblock">
+<div class="title">For 4xx status codes the predicate is <code>client-error?</code></div>
 <div class="content">
 <pre class="pygments highlight"><code data-lang="clojure"><span class="tok-p">(</span><span class="tok-nf">require</span> <span class="tok-o">&#39;</span><span class="tok-p">[</span><span class="tok-nv">httpurr.status</span> <span class="tok-ss">:as</span> <span class="tok-nv">s</span><span class="tok-p">])</span>
 
@@ -389,14 +308,8 @@ a certain type.</p>
 <span class="tok-c1">;; =&gt; true</span></code></pre>
 </div>
 </div>
-<div class="ulist">
-<ul>
-<li>
-<p>For 5xx status codes the predicate is <code>server-error?</code></p>
-</li>
-</ul>
-</div>
 <div class="listingblock">
+<div class="title">For 5xx status codes the predicate is <code>server-error?</code></div>
 <div class="content">
 <pre class="pygments highlight"><code data-lang="clojure"><span class="tok-p">(</span><span class="tok-nf">require</span> <span class="tok-o">&#39;</span><span class="tok-p">[</span><span class="tok-nv">httpurr.status</span> <span class="tok-ss">:as</span> <span class="tok-nv">s</span><span class="tok-p">])</span>
 
@@ -405,15 +318,15 @@ a certain type.</p>
 </div>
 </div>
 </div>
-<div class="sect2">
-<h3 id="checking-status-codes"><a class="link" href="#checking-status-codes">Checking status codes</a></h3>
+<div class="sect3">
+<h4 id="checking-status-codes"><a class="link" href="#checking-status-codes">Checking status codes</a></h4>
 <div class="paragraph">
-<p>If you need more granularity you can always check for status codes in your responses and transform
-the promise accordingly.</p>
+<p>If you need more granularity you can always check for status codes in your
+responses and transform the promise accordingly.</p>
 </div>
 <div class="paragraph">
-<p>Let&#8217;s say you&#8217;re building an API client and you want to perform GET requests for the URL of an entity
-that can return:</p>
+<p>Let&#8217;s say you&#8217;re building an API client and you want to perform GET requests for
+the URL of an entity that can return:</p>
 </div>
 <div class="ulist">
 <ul>
@@ -429,8 +342,9 @@ that can return:</p>
 </ul>
 </div>
 <div class="paragraph">
-<p>We want to transform the promises by extracting the body of the 200 responses and, if we encounter a
-404 or 401, return a keyword denoting the type of error. Let&#8217;s give it a go:</p>
+<p>We want to transform the promises by extracting the body of the 200 responses and,
+if we encounter a 404 or 401, return a keyword denoting the type of error. Let&#8217;s
+give it a go:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -457,22 +371,25 @@ that can return:</p>
 </div>
 </div>
 </div>
+</div>
 <div class="sect1">
 <h2 id="error-handling"><a class="link" href="#error-handling">Error handling</a></h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>The <a href="http://funcool.github.io/promesa/latest/">Promesa docs</a> explain all the possible combinators
-for working with promises. We&#8217;ve already used <code>then</code> for processing responses, let&#8217;s look at two
-other useful functions: <code>catch</code> and <code>branch</code>.</p>
+<p>The <a href="http://funcool.github.io/promesa/latest/">Promesa docs</a> explain all the
+possible combinators for working with promises. We&#8217;ve already used <code>then</code> for
+processing responses, let&#8217;s look at two other useful functions: <code>catch</code> and <code>branch</code>.</p>
 </div>
 <div class="paragraph">
-<p>If we want to attach an error handler to the promise we can use the <code>catch</code> function. Let&#8217;s rewrite
-our previous <code>entity</code> function for handling the error case. We&#8217;ll just log the error to the console,
-you may want to use a better error handling in your code.</p>
+<p>If we want to attach an error handler to the promise we can use the <code>catch</code>
+function. Let&#8217;s rewrite our previous <code>entity</code> function for handling the error case.
+We&#8217;ll just log the error to the console, you may want to use a better error
+handling in your code.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="pygments highlight"><code data-lang="clojure"><span class="tok-p">(</span><span class="tok-kd">defn </span><span class="tok-nv">entity</span> <span class="tok-p">[</span><span class="tok-nv">id</span><span class="tok-p">]</span>
+<pre class="pygments highlight"><code data-lang="clojure"><span class="tok-p">(</span><span class="tok-kd">defn </span><span class="tok-nv">entity</span>
+  <span class="tok-p">[</span><span class="tok-nv">id</span><span class="tok-p">]</span>
   <span class="tok-p">(</span><span class="tok-nb">-&gt; </span><span class="tok-p">(</span><span class="tok-nf">p/then</span> <span class="tok-p">(</span><span class="tok-nf">xhr/get</span> <span class="tok-p">(</span><span class="tok-nf">id-&gt;url</span> <span class="tok-nv">id</span><span class="tok-p">))</span>
               <span class="tok-nv">process-response</span><span class="tok-p">)</span>
       <span class="tok-p">(</span><span class="tok-nf">p/catch</span> <span class="tok-p">(</span><span class="tok-k">fn </span><span class="tok-p">[</span><span class="tok-nv">err</span><span class="tok-p">]</span>
@@ -480,8 +397,8 @@ you may want to use a better error handling in your code.</p>
 </div>
 </div>
 <div class="paragraph">
-<p>For cases when we want to attach both a success and error handler to a promise we can use the <code>branch</code>
-function:</p>
+<p>For cases when we want to attach both a success and error handler to a promise we
+can use the <code>branch</code> function:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -498,8 +415,8 @@ function:</p>
 <h2 id="implementing-your-own-client"><a class="link" href="#implementing-your-own-client">Implementing your own client</a></h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>The functions in <code>httpurr.client</code> are based on abstractions defined as protocols in <code>httpurr.protocols</code> so
-you can implement our own clients.</p>
+<p>The functions in <code>httpurr.client</code> are based on abstractions defined as protocols
+in <code>httpurr.protocols</code> so you can implement our own clients.</p>
 </div>
 <div class="paragraph">
 <p>The following protocols are defined in <code>httpurr.protocols</code>:</p>
@@ -524,9 +441,9 @@ you can implement our own clients.</p>
 <p>Take a look at the XHR client at <code>httpurr.client.xhr</code> for reference.</p>
 </div>
 <div class="paragraph">
-<p>Note that the requests passed to the clients have a escaped URL generated as their <code>:url</code> value, inferred
-from the <code>:url</code> and <code>:query-string</code> from the original requests before being passed to the protocol&#8217;s
-<code>send!</code> function.</p>
+<p>Note that the requests passed to the clients have a escaped URL generated as
+their <code>:url</code> value, inferred from the <code>:url</code> and <code>:query-string</code> from the original
+requests before being passed to the protocol&#8217;s <code>send!</code> function.</p>
 </div>
 </div>
 </div>
@@ -536,9 +453,9 @@ from the <code>:url</code> and <code>:query-string</code> from the original requ
 <div class="sect2">
 <h3 id="encoding-decoding"><a class="link" href="#encoding-decoding">Encoding/Decoding</a></h3>
 <div class="paragraph">
-<p>Since requests and responses are plain maps, we can write simple encoding/decoding function
-and modify request and responses appropiately. For example, let&#8217;s write a decoder function
-that converts JSON payloads to ClojureScript data structures:</p>
+<p>Since requests and responses are plain maps, we can write simple encoding/decoding
+function and modify request and responses appropiately. For example, let&#8217;s write
+a decoder function that converts JSON payloads to ClojureScript data structures:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -573,7 +490,8 @@ that converts JSON payloads to ClojureScript data structures:</p>
 </div>
 </div>
 <div class="paragraph">
-<p>Encoding can be achieved similarly applying the map transforming function to requests before sending them:</p>
+<p>Encoding can be achieved similarly applying the map transforming function to
+requests before sending them:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -612,9 +530,9 @@ that converts JSON payloads to ClojureScript data structures:</p>
 <div class="sect2">
 <h3 id="auth"><a class="link" href="#auth">Auth</a></h3>
 <div class="paragraph">
-<p>The <code>httpur.auth</code> namespace contains the <code>basic</code> function for basic authentication. It
-accepts a realm, user and a password and returns a function that can be applied to a request
-for adding the basic auth headers:</p>
+<p>The <code>httpur.auth</code> namespace contains the <code>basic</code> function for basic authentication.
+It accepts a realm, user and a password and returns a function that can be applied
+to a request for adding the basic auth headers:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -657,8 +575,9 @@ for adding the basic auth headers:</p>
 <div class="sect3">
 <h4 id="browser"><a class="link" href="#browser">Browser</a></h4>
 <div class="paragraph">
-<p>For sending form data you need to send the <code>FormData</code> instance as the body of the request. Let&#8217;s send
-a form to the httbin.org site and confirm that the form is sent correctly.</p>
+<p>For sending form data you need to send the <code>FormData</code> instance as the body of
+the request. Let&#8217;s send a form to the httbin.org site and confirm that the form
+is sent correctly.</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -688,6 +607,81 @@ a form to the httbin.org site and confirm that the form is sent correctly.</p>
 <span class="tok-c1">;; :content-type multipart/form-data; boundary=----WebKitFormBoundaryg4VACYY9tWU91kvn</span></code></pre>
 </div>
 </div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="faq"><a class="link" href="#faq">FAQ</a></h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="why-another-library"><a class="link" href="#why-another-library">Why another library?</a></h3>
+<div class="paragraph">
+<p>There are plenty of HTTP client libraries available, each with its own design
+decisions. Here are the ones made for <code>httpurr</code>.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Promises are a natural fit for the request-response nature of HTTP. They
+contain either an eventual value (the response) or an error value. CSP channels
+lack first class errors and callbacks/errbacks are cumbersome to compose.
+<code>httpurr</code> uses <a href="https://github.com/funcool/promesa">promesa</a> to provide a
+cross-platform promise type and API.</p>
+</li>
+<li>
+<p>A data based API, requests and responses are just maps. This makes easy to
+create and transform requests piping various transformations together and the
+same is true for responses.</p>
+</li>
+<li>
+<p>No automatic encoding/decoding based on content type, it sits at a lower level.
+Is your responsibility to encode and decode data, <code>httpurr</code> just speaks HTTP.</p>
+</li>
+<li>
+<p>No automatic generation of query strings. There is no consensus on how to use
+query params for things like collection and don&#8217;t want to make the choice for you.</p>
+</li>
+<li>
+<p>Constants with every HTTP status code, sets of status codes and predicates for
+discerning response types.</p>
+</li>
+<li>
+<p>Pluggable client implementation. Currently <code>httpurr</code> ships with an
+XHR-based client for the browser, a node client, and a aleph client for Clojure.</p>
+</li>
+<li>
+<p>Intended as a infrastructure lib that sits at the bottom of your HTTP client API,
+we&#8217;ll add things judiciously.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="alternatives"><a class="link" href="#alternatives">Alternatives?</a></h3>
+<div class="paragraph">
+<p>There are several alternatives, <code>httpurr</code> tries to steal the best of each of them
+while having a promise-based API which no one offers.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>cljs-http</strong>: Pretty popular and complete, uses CSP channels for responses.
+Implicitly encodes and decodes data. It has some features like helpers for
+JSONP and auth that I may eventually add to <code>httpurr</code>.</p>
+</li>
+<li>
+<p><strong>cljs-ajax</strong>: Works in both Clojure and ClojureScript. Implicitly encodes
+and decodes data. Callback-based API.</p>
+</li>
+<li>
+<p><strong>happy</strong>: Encoding/decoding are explicit. Callback-based API. Works in
+both Clojure and ClojureScript. Pluggable clients through global state mutation.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>All listed alternatives are licensed with EPL.</p>
 </div>
 </div>
 </div>
@@ -729,7 +723,7 @@ node out/tests.js</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>You will need to have nodejs or iojs installed on your system.</p>
+<p>You will need to have nodejs installed on your system.</p>
 </div>
 </div>
 <div class="sect2">
@@ -771,7 +765,7 @@ For more information, please refer to &lt;http://unlicense.org/&gt;</pre>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2016-02-27 10:37:57 EET
+Last updated 2016-03-28 16:50:58 EEST
 </div>
 </div>
 </body>
