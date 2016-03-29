@@ -174,7 +174,8 @@
           req {:method :get :url url :headers {}}
           resp (send! req)]
       (p/catch resp (fn [err]
-                      (t/is (= err :timeout))
+                      (t/is (instance? cljs.core.ExceptionInfo err))
+                      (t/is (= (ex-data err) {:type :timeout}))
                       (done)))
       (let [xhr (raw-last-request)]
         (.simulateTimeout xhr)))))

@@ -1,10 +1,9 @@
 (ns httpurr.client.xhr
   (:refer-clojure :exclude [get])
   (:require [httpurr.client :as c]
-            [httpurr.client.util :as util]
             [httpurr.protocols :as p]
             [goog.events :as events]
-            [clojure.walk :as walk])
+            [clojure.string :as str])
   (:import goog.net.ErrorCode
            goog.net.EventType
            goog.net.XhrIo))
@@ -13,7 +12,9 @@
 
 (defn normalize-headers
   [headers]
-  (reduce-kv (fn [acc k v] (assoc acc (.toLowerCase k) v)) {} headers))
+  (reduce-kv (fn [acc k v]
+               (assoc acc (str/lower-case k) v))
+             {} headers))
 
 (defn- translate-error-code
   [code]
@@ -46,8 +47,11 @@
                   (normalize-headers))})
 
   (-error [this]
-    (-> (.getLastErrorCode xhr)
-        (translate-error-code))))
+    (let [type (-> (.getLastErrorCode xhr)
+                   (translate-error-code))
+          message (.getLastError xhr)]
+      (ex-info message {:type type}))))
+
 
 (def client
   (reify p/Client
@@ -55,7 +59,7 @@
       (let [{:keys [method url query-string headers body]} request
             uri (c/make-uri url query-string)
             method (c/keyword->method method)
-            headers (util/prepare-headers headers)
+            headers (if headers (clj->js headers) #js {})
             xhr (.send *xhr-impl* uri nil method body headers timeout)]
         (Xhr. xhr)))))
 

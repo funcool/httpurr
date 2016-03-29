@@ -2,7 +2,6 @@
   (:refer-clojure :exclude [get])
   (:require [cljs.nodejs :as node]
             [httpurr.client :as c]
-            [httpurr.client.util :refer [prepare-headers]]
             [httpurr.protocols :as p]))
 
 (def ^:private http (node/require "http"))
@@ -18,11 +17,6 @@
      :path (.-pathname parsed)
      :query (.-query parsed)}))
 
-(deftype HttpResponseError [err]
-  p/Response
-  (-success? [_] false)
-  (-error [_] err))
-
 (deftype HttpResponse [msg]
   p/Response
   (-success? [_] true)
@@ -34,29 +28,32 @@
                  (map first headersv)
                  (map second headersv))})))
 
+(deftype HttpResponseError [type err]
+  p/Response
+  (-success? [_] false)
+  (-error [_]
+    (if err
+      (ex-info (.-message err) {:type type :code (.-code err)})
+      (ex-info "" {:type type}))))
+
 (deftype HttpRequest [req]
   p/Request
   (-listen [_ callback]
     (letfn [(listen [target event cb]
               (.on target event cb))
             (on-abort [err]
-              ;; (js/console.log "on-abort")
-              (callback (HttpResponseError. :abort)))
+              (callback (HttpResponseError. :abort nil)))
             (on-response [msg]
-              ;; (js/console.log "on-response")
               (listen msg "readable" (partial on-message msg)))
             (on-message [msg]
-              ;; (js/console.log "on-message")
               (callback (HttpResponse. msg)))
             (on-timeout [err]
-              ;; (js/console.log "on-timeout" err)
-              (callback (HttpResponseError. :timeout)))
+              (callback (HttpResponseError. :timeout nil)))
             (on-client-error [err]
               ;; (js/console.log "on-client-error")
-              (callback (HttpResponseError. :http)))
+              (callback (HttpResponseError. :client-error err)))
             (on-error [err]
-              ;; (js/console.log "on-error" err)
-              (callback (HttpResponseError. :exception)))]
+              (callback (HttpResponseError. :exception err)))]
       (listen req "response" on-response)
       (listen req "abort" on-abort)
       (listen req "timeout" on-timeout)
@@ -73,7 +70,7 @@
       (let [{:keys [method url headers body]} request
             urldata (url->options url)
             options (merge (dissoc urldata :query)
-                           {:headers (prepare-headers headers)
+                           {:headers (if headers (clj->js headers) #js {})
                             :method (c/keyword->method method)}
                            (when (:query urldata)
                              {:path (str (:path urldata) "?" (:query urldata))})

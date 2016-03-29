@@ -179,5 +179,6 @@
                :headers {}}
           resp (send! req {:timeout 400})]
       (p/catch resp (fn [response]
-                      (t/is (= response :timeout))
+                      (t/is (instance? cljs.core.ExceptionInfo response))
+                      (t/is (= (ex-data response) {:type :timeout}))
                       (done))))))
