@@ -1,20 +1,21 @@
 (ns httpurr.client.node
   (:refer-clojure :exclude [get])
-  (:require [httpurr.client :as c]
+  (:require [cljs.nodejs :as node]
+            [httpurr.client :as c]
             [httpurr.client.util :refer [prepare-headers]]
             [httpurr.protocols :as p]))
 
-(def ^:private http (js/require "http"))
-(def ^:private https (js/require "https"))
-(def ^:private url (js/require "url"))
+(def ^:private http (node/require "http"))
+(def ^:private https (node/require "https"))
+(def ^:private url (node/require "url"))
 
 (defn url->options
   [u]
   (let [parsed (.parse url u)]
     {:protocol (.-protocol parsed)
-     :host (.-host parsed)
+     :host (.-hostname parsed)
      :port (.-port parsed)
-     :path (.-path parsed)
+     :path (.-pathname parsed)
      :query (.-query parsed)}))
 
 (deftype HttpResponseError [err]
@@ -35,32 +36,32 @@
 
 (deftype HttpRequest [req]
   p/Request
-  (-listen [_ cb]
-    ;; ok
-    (.on req
-         "response"
-         (fn [msg]
-           (.on msg
-                "readable"
-                (fn [_]
-                  (cb (HttpResponse. msg))))))
-    ;; errors
-    (.on req
-         "abort"
-         (fn [err]
-           (cb (HttpResponseError. :abort))))
-    (.on req
-         "timeout"
-         (fn [err]
-           (cb (HttpResponseError. :timeout))))
-    (.on req
-         "clientError"
-         (fn [err]
-           (cb (HttpResponseError. :http))))
-    (.on req
-         "error"
-         (fn [err]
-           (cb (HttpResponseError. :exception)))))
+  (-listen [_ callback]
+    (letfn [(listen [target event cb]
+              (.on target event cb))
+            (on-abort [err]
+              ;; (js/console.log "on-abort")
+              (callback (HttpResponseError. :abort)))
+            (on-response [msg]
+              ;; (js/console.log "on-response")
+              (listen msg "readable" (partial on-message msg)))
+            (on-message [msg]
+              ;; (js/console.log "on-message")
+              (callback (HttpResponse. msg)))
+            (on-timeout [err]
+              ;; (js/console.log "on-timeout" err)
+              (callback (HttpResponseError. :timeout)))
+            (on-client-error [err]
+              ;; (js/console.log "on-client-error")
+              (callback (HttpResponseError. :http)))
+            (on-error [err]
+              ;; (js/console.log "on-error" err)
+              (callback (HttpResponseError. :exception)))]
+      (listen req "response" on-response)
+      (listen req "abort" on-abort)
+      (listen req "timeout" on-timeout)
+      (listen req "clientError" on-client-error)
+      (listen req "error" on-error)))
 
   p/Abort
   (-abort [_]
@@ -70,15 +71,18 @@
   (reify p/Client
     (-send [_ request {timeout :timeout :or {timeout 0} :as options}]
       (let [{:keys [method url headers body]} request
-            method (c/keyword->method method)
-            headers (prepare-headers headers)
-            parsed-url (url->options url)
-            https? (= "https:" (:protocol parsed-url))
-            options (merge {:method method :headers headers} parsed-url)
+            urldata (url->options url)
+            options (merge (dissoc urldata :query)
+                           {:headers (prepare-headers headers)
+                            :method (c/keyword->method method)}
+                           (when (:query urldata)
+                             {:path (str (:path urldata) "?" (:query urldata))})
+                           (when (:query-string request)
+                             {:path (str (:path urldata) "?" (:query-string request))}))
+            https? (= "https:" (:protocol options))
             req (.request (if https? https http) (clj->js options))]
         (.setTimeout req timeout)
-        (when body
-          (.write req body))
+        (when body (.write req body))
         (.end req)
         (HttpRequest. req)))))
 
