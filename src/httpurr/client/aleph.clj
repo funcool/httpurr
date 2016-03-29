@@ -6,43 +6,47 @@
             [httpurr.protocols :as p]
             [httpurr.status :as s]))
 
+;; --- Client Impl.
+
 (defn- response?
+  "Check if data has valid response like format."
   [data]
   (and (map? data)
        (s/status-code? (:status data 0))))
 
-(defn- success
-  [response]
-  (reify
-    p/Response
-    (-success? [_] true)
-    (-response [_] response)))
-
-(defn- error
-  [err]
-  (let [data (ex-data err)]
-    (if (response? data)
-      (success data)
-      (reify
-        p/Response
-        (-success? [_] false)
-        (-error [_] err)))))
-
-(defn deferred->http
+(defn- deferred->request
+  "Coerces the aleph deferred to the Request httpur
+  abstraction."
   [d]
-  (reify
-    p/Request
-    (-listen [_ cb]
-      (dfd/on-realized d
-                       (comp cb success)
-                       (comp cb error)))))
+  (letfn [(success [rsp]
+            (reify
+              p/Response
+              (-success? [_] true)
+              (-response [_] rsp)))
+
+          (error [rsp]
+            (let [data (ex-data rsp)]
+              (if (response? data)
+                (success data)
+                (reify
+                  p/Response
+                  (-success? [_] false)
+                  (-error [_] rsp)))))]
+    (reify
+      p/Request
+      (-listen [_ cb]
+        (dfd/on-realized d (comp cb success) (comp cb error))))))
 
 (def client
+  "A singleton instance of aleph client."
   (reify p/Client
     (-send [_ request {:keys [timeout] :as options}]
-      (let [url (c/make-uri (:url request) (:query-string request))]
-        (deferred->http (http/request (merge request {:url url
-                                                      :request-timeout timeout})))))))
+      (let [url (c/make-uri (:url request) (:query-string request))
+            params (merge request {:url url  :request-timeout timeout})]
+        (-> (http/request params)
+            (deferred->request))))))
+
+;; --- Shortcuts
 
 (def send! (partial c/send! client))
 (def head (partial (c/method :head) client))
