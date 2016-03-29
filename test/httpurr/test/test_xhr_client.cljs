@@ -5,7 +5,7 @@
             [promesa.core :as p])
   (:import goog.testing.net.XhrIo))
 
-;; helpers
+;; --- helpers
 
 (defn raw-last-request
   []
@@ -15,7 +15,7 @@
   []
   (let [r (raw-last-request)]
     {:method  (.getLastMethod r)
-     :uri     (.toString (.getLastUri r))
+     :url     (.toString (.getLastUri r))
      :headers (xhr/normalize-headers
                (js->clj (.getLastRequestHeaders r)))
      :body    (.getLastContent r)}))
@@ -29,28 +29,26 @@
   (binding [xhr/*xhr-impl* goog.testing.net.XhrIo]
     (apply http/send! xhr/client args)))
 
-;; tests
-
 (t/use-fixtures :each
   {:after #(cleanup)})
 
+;; --- tests
+
 (t/deftest send-plain-get
-  (let [url "http://github.com/funcool/cats"
+  (let [url "http://localhost/test"
         req {:method :get
              :url url
              :headers {}}]
 
     (send! req)
 
-    (let [{:keys [method
-                  uri
-                  headers]} (last-request)]
-      (t/is (= method "GET"))
-      (t/is (= uri url))
-      (t/is (empty? headers)))))
+    (let [lreq (last-request)]
+      (t/is (= (:method lreq) "GET"))
+      (t/is (= (:url lreq) url))
+      (t/is (empty? (:headers lreq))))))
 
 (t/deftest send-plain-get-with-query-string
-  (let [url "http://github.com/funcool/cats"
+  (let [url "http://localhost/test"
         query "foo=bar&baz=bar"
         url-with-query (str url "?" query)
         req {:method :get
@@ -60,15 +58,13 @@
 
     (send! req)
 
-    (let [{:keys [method
-                  uri
-                  headers]} (last-request)]
-      (t/is (= method "GET"))
-      (t/is (= uri url-with-query))
-      (t/is (empty? headers)))))
+    (let [lreq (last-request)]
+      (t/is (= (:method lreq) "GET"))
+      (t/is (= (:url lreq) url-with-query))
+      (t/is (empty? (:headers lreq))))))
 
 (t/deftest send-plain-get-with-encoded-query-string
-  (let [url "http://github.com/funcool/cats"
+  (let [url "http://localhost/test"
         query "foo=b  az"
         url-with-query (js/encodeURI (str url "?" query))
         req {:method :get
@@ -78,41 +74,26 @@
 
     (send! req)
 
-    (let [{:keys [method
-                  uri
-                  headers]} (last-request)]
-      (t/is (= method "GET"))
-      (t/is (= uri url-with-query))
-      (t/is (empty? headers)))))
-
-(t/deftest send-plain-get-with-custom-header
-  (let [url "http://www.github.com/funcool/promesa"
-        req {:method :get
-             :url url
-             :headers {"content-type" "application/json"}}]
-
-    (send! req)
-
-    (let [{:keys [method
-                  uri
-                  headers]} (last-request)]
-      (t/is (= method "GET"))
-      (t/is (= uri url))
-      (t/is (= headers (:headers req))))))
+    (let [lreq (last-request)]
+      (t/is (= (:method lreq) "GET"))
+      (t/is (= (:url lreq) url-with-query))
+      (t/is (empty? (:headers lreq))))))
 
 (t/deftest send-plain-get-with-multiple-custom-headers
-  (let [url "http://www.github.com/funcool/promesa"
+  (let [url "http://localhost/funcool/promesa"
         req {:method :get
              :url url
              :headers {"content-length" 42
                        "content-encoding" "gzip"}}]
     (send! req)
 
-    (let [{:keys [headers]} (last-request)]
-      (t/is (= headers (:headers req))))))
+    (let [lreq (last-request)]
+      (t/is (= (:method lreq) "GET"))
+      (t/is (= (:url lreq) url))
+      (t/is (= (:headers lreq) (:headers req))))))
 
 (t/deftest send-request-with-body
-  (let [url "http://www.github.com/funcool/promesa"
+  (let [url "http://localhost/funcool/promesa"
         content "yada yada yada"
         ctype "text/plain"
         req {:method :post
@@ -121,17 +102,14 @@
                        "content-encoding" "gzip"}
              :body content}]
     (send! req)
-    (let [{:keys [method
-                  body
-                  headers]} (last-request)]
-      (t/is (= method "POST"))
-      (t/is (= body content))
-      (t/is (= headers (:headers req))))))
-
-;; responses
+    (let [lreq (last-request)]
+      (t/is (= (:method lreq) "POST"))
+      (t/is (= (:url lreq) url))
+      (t/is (= (:body lreq content)))
+      (t/is (= (:headers lreq) (:headers req))))))
 
 (t/deftest send-returns-a-promise
-  (let [url "http://www.github.com/funcool/cats"
+  (let [url "http://localhost/test"
         req {:method :get
              :url url
              :headers {}}
@@ -140,7 +118,7 @@
 
 (t/deftest send-returns-response-map-on-success
   (t/async done
-    (let [url "http://www.github.com/funcool/cats"
+    (let [url "http://localhost/test"
           req {:method :get
                :url url
                :headers {}}
@@ -156,7 +134,7 @@
 
 (t/deftest body-and-headers-in-response-with-error
   (t/async done
-    (let [url "http://www.github.com/funcool/cats"
+    (let [url "http://localhost/test"
           req {:method :get
                :url url
                :headers {}}
@@ -174,7 +152,7 @@
 
 (t/deftest body-and-headers-in-response
   (t/async done
-    (let [url "http://www.github.com/funcool/cats"
+    (let [url "http://localhost/test"
           req {:method :get
                :url url
                :headers {}}
@@ -190,21 +168,9 @@
             headers #js {"content-type" "text/plain"}]
         (.simulateResponse xhr status body headers))))
 
-;; note: XhrIo mock doesn't respect timeouts
-#_(t/deftest send-request-fails-if-expired-timeout
-  (t/async done
-    (let [url "http://www.github.com/funcool/cats"
-          req {:method :get
-               :url url
-               :headers {}}
-          resp (send! req {:timeout 1})]
-      (p/catch resp (fn [err]
-                      (t/is (= err e/timeout))
-                      (done))))))
-
 (t/deftest send-request-fails-when-timeout-forced
   (t/async done
-    (let [url "http://www.github.com/funcool/cats"
+    (let [url "http://localhost/test"
           req {:method :get :url url :headers {}}
           resp (send! req)]
       (p/catch resp (fn [err]
@@ -215,13 +181,11 @@
 
 (t/deftest request-can-be-aborted
   (t/async done
-    (let [url "http://www.github.com/funcool/cats"
+    (let [url "http://localhost/test"
           req {:method :get
                :url url
                :headers {}}
           resp (send! req)]
-      (p/finally resp (fn [response]
-                        (t/is (p/cancelled? resp))
-                        (done)))
-      (p/catch (p/cancel! resp) (constantly nil)))))
-
+      (-> (p/cancel! resp)
+          (p/catch (fn [res]
+                     (done)))))))
