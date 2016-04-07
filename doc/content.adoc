@@ -50,7 +50,7 @@ performs the request and returns a promise that will be resolved if there is a
 response and rejected on timeout, exceptions, HTTP errors or aborts.
 
 Let's try to make a GET request using the xhr-based client that ships
-with `httpurr`:
+with `httpurr`, note that this client will only work on browser environments:
 
 [source, clojure]
 ----
@@ -66,17 +66,40 @@ The options map accepts a `:timeout`, in miliseconds, after which the promise wi
 be rejected with the `:timeout` keyword as a value.
 
 Furthermore, the `httpurr.client` namespaces exposes `get`, `put`, `post`,
-`delete`, `head`, `options` and `trace` methods with identical signatures. They
+`patch`, `delete`, `head`, `options` and `trace` methods with identical signatures. They
 all accept the client as the first argument.
 
 These functions have three arities:
 
 - Two arguments the first is the client and the second is assumed to be the URL
   of the request.
+
+[source, clojure]
+----
+(http/get client
+	   "https://api.github.com/orgs/funcool")
+----
+
 - Three arguments: like above and the third is the request map without the
   `:url` key.
+
+[source, clojure]
+----
+(http/get client
+           "https://api.github.com/orgs/funcool"
+	   {"Content-Type" "application/json"})
+----
+
 - Four arguments: like above and the fourth argument is an option map passed
   to `send!`.
+
+[source, clojure]
+----
+(http/get client
+           "https://api.github.com/orgs/funcool"
+	   {"Content-Type" "application/json"}
+	   {:timeout 2000})
+----
 
 For convenience, client implementations provide aliases for the HTTP methods
 and the `send!` function:
@@ -84,7 +107,11 @@ and the `send!` function:
 [source, clojure]
 ----
 (require '[httpurr.client.xhr :as http])
+
 (http/get "https://api.github.com/orgs/funcool")
+
+(http/send! {:method :get
+	       :url "https://api.github.com/orgs/funcool"})
 ----
 
 === Responses
@@ -92,7 +119,8 @@ and the `send!` function:
 Responses are maps with the following keys:
 
 * `:status` is the response status code.
-* `:headers` is a map from strings to strings with the headers of the response.
+* `:headers` is a map from strings to strings with the headers of the response. The names of the headers
+   are normalized to lowercase.
 * `:body` is the body of the response.
 
 === Status Codes
@@ -222,6 +250,25 @@ can use the `branch` function:
               (.error js/console err))))
 ----
 
+== Available clients
+
+=== ClojureScript
+
+The following clients are available in ClojureScript:
+
+==== `httpurr.client.xhr`
+
+XHR-based client for the browser.
+
+==== `httpurr.client.node`
+
+Node.js client.
+
+=== Clojure
+
+==== `httpurr.client.aleph`
+
+Aleph-based client.
 
 == Implementing your own client
 
@@ -235,7 +282,7 @@ The following protocols are defined in `httpurr.protocols`:
 * `Abort` is an optional protocol for abortable HTTP requests
 * `Response` is the protocol for HTTP responses
 
-Take a look at the XHR client at `httpurr.client.xhr` for reference.
+Take a look at any of the clients under `httpurr.client` namespace for reference.
 
 Note that the requests passed to the clients have a escaped URL generated as
 their `:url` value, inferred from the `:url` and `:query-string` from the original

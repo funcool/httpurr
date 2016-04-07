@@ -50,7 +50,6 @@
             (on-timeout [err]
               (callback (HttpResponseError. :timeout nil)))
             (on-client-error [err]
-              ;; (js/console.log "on-client-error")
               (callback (HttpResponseError. :client-error err)))
             (on-error [err]
               (callback (HttpResponseError. :exception err)))]
