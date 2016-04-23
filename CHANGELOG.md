@@ -1,5 +1,19 @@
 # Changelog #
 
+## Version 0.6.0 ##
+
+Date: 2016-04-23
+
+- Major nodejs client refactor (making it consistent with the rest of clients and
+  may contain **breaking changes**).
+- Fix consistency issues on `aleph` client.
+- Add full test suite for the 3 builtin clients (not only xhr).
+- Normalize error reporting: all builtin clients now uses `ex-info`
+  instances with response data atteched for error reporting.
+- Code cleaning
+- Add `:query-params` encoding.
+
+
 ## Version 0.5.0 ##
 
 Date: 2016-03-28
