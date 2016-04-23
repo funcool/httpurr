@@ -1,6 +1,6 @@
 = httpurr
 Funcool
-0.5.0
+0.6.0
 :toc: left
 :!numbered:
 :idseparator: -
@@ -26,7 +26,7 @@ dependency vector on your *_project.clj_* file:
 
 [source,clojure]
 ----
-[funcool/httpurr "0.5.0"]
+[funcool/httpurr "0.6.0"]
 ----
 
 
@@ -44,6 +44,7 @@ Requests are maps with the following keys:
 * `:headers` is a map from strings to strings with the headers of the request.
 * `:body` is the body of the request.
 * `:query-string` is a string with the query part of the URL.
+* `:query-params` is a map that will be encoded as query string.
 
 `send!` is a function that, given a request map and optionally a map of options,
 performs the request and returns a promise that will be resolved if there is a
@@ -94,6 +95,7 @@ Responses are maps with the following keys:
 * `:status` is the response status code.
 * `:headers` is a map from strings to strings with the headers of the response.
 * `:body` is the body of the response.
+
 
 === Status Codes
 
@@ -189,6 +191,7 @@ give it a go:
           process-response))
 ----
 
+
 == Error handling
 
 The link:http://funcool.github.io/promesa/latest/[Promesa docs] explain all the
@@ -240,6 +243,7 @@ Take a look at the XHR client at `httpurr.client.xhr` for reference.
 Note that the requests passed to the clients have a escaped URL generated as
 their `:url` value, inferred from the `:url` and `:query-string` from the original
 requests before being passed to the protocol's `send!` function.
+
 
 == Examples
 
@@ -357,6 +361,7 @@ to a request for adding the basic auth headers:
 
 A similar approach can be followed for implementing other authentication schemes.
 
+
 === Sending form data
 
 ==== Browser
@@ -411,8 +416,6 @@ decisions. Here are the ones made for `httpurr`.
   same is true for responses.
 * No automatic encoding/decoding based on content type, it sits at a lower level.
   Is your responsibility to encode and decode data, `httpurr` just speaks HTTP.
-* No automatic generation of query strings. There is no consensus on how to use
-  query params for things like collection and don't want to make the choice for you.
 * Constants with every HTTP status code, sets of status codes and predicates for
   discerning response types.
 * Pluggable client implementation. Currently `httpurr` ships with an
