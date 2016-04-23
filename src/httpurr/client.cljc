@@ -16,20 +16,6 @@
    :delete  "DELETE"
    :trace   "TRACE"})
 
-#?(:clj
-   (defn make-uri
-     [url query-string]
-     (let [uri (URL. (str url "?" (if query-string query-string "")))]
-       (.toString uri)))
-   :cljs
-   (defn make-uri
-     [url query-string]
-     (let [uri (Uri. url)
-           uri (if query-string
-                 (.setQuery uri query-string)
-                 uri)]
-       uri)))
-
 (defn- perform!
   [client request options]
   (let [{:keys [method url headers body query-string] :or {method :get}} request]

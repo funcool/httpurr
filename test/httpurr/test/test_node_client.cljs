@@ -89,6 +89,23 @@
                   (t/is (= (:query lreq) query))
                   (done)))))))
 
+(t/deftest send-plain-get-with-encoded-query-params
+  (t/async done
+    (let [path "/test"
+          url (make-uri path)
+          query {:foo ["bar" "ba z"]}
+          req {:method :get
+               :query-params query
+               :url url}]
+
+      (p/then (send! req)
+              (fn [response]
+                (let [lreq @last-request]
+                  (t/is (= (:method lreq) :get))
+                  (t/is (= (:path lreq) path))
+                  (t/is (:query lreq) "foo=bar&foo=ba%20z")
+                  (done)))))))
+
 (t/deftest send-plain-get-with-query-string-on-path
   (t/async done
     (let [path "/test"

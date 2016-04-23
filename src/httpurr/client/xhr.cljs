@@ -4,9 +4,10 @@
             [httpurr.protocols :as p]
             [goog.events :as events]
             [clojure.string :as str])
-  (:import goog.net.ErrorCode
-           goog.net.EventType
-           goog.net.XhrIo))
+  (:import [goog.net ErrorCode EventType]
+           [goog.net XhrIo]
+           [goog.Uri QueryData]
+           [goog Uri]))
 
 (def ^:dynamic *xhr-impl* XhrIo)
 
@@ -52,12 +53,20 @@
           message (.getLastError xhr)]
       (ex-info message {:type type}))))
 
+(defn- make-uri
+  [url qs qp]
+  (let [uri (Uri. url)]
+    (when qs (.setQuery uri qs))
+    (when qp
+      (let [dt (.createFromMap QueryData (clj->js  qp))]
+        (.setQueryData uri dt)))
+    (.toString uri)))
 
 (def client
   (reify p/Client
     (-send [_ request {timeout :timeout :or {timeout 0} :as options}]
-      (let [{:keys [method url query-string headers body]} request
-            uri (c/make-uri url query-string)
+      (let [{:keys [method url query-string query-params headers body]} request
+            uri (make-uri url query-string query-params)
             method (c/keyword->method method)
             headers (if headers (clj->js headers) #js {})
             xhr (.send *xhr-impl* uri nil method body headers timeout)]

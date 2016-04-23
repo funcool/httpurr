@@ -7,15 +7,19 @@
 (def ^:private http (node/require "http"))
 (def ^:private https (node/require "https"))
 (def ^:private url (node/require "url"))
+(def ^:private querystring (node/require "querystring"))
 
-(defn url->options
-  [u]
+(defn- url->options
+  [u qs qp]
   (let [parsed (.parse url u)]
-    {:protocol (.-protocol parsed)
-     :host (.-hostname parsed)
-     :port (.-port parsed)
-     :path (.-pathname parsed)
-     :query (.-query parsed)}))
+    (merge
+     {:protocol (.-protocol parsed)
+      :host (.-hostname parsed)
+      :port (.-port parsed)
+      :path (.-pathname parsed)
+      :query (.-query parsed)}
+     (when qs {:query qs})
+     (when qp {:query (.stringify querystring (clj->js qp))}))))
 
 (deftype HttpResponse [msg]
   p/Response
@@ -66,8 +70,8 @@
 (def client
   (reify p/Client
     (-send [_ request {timeout :timeout :or {timeout 0} :as options}]
-      (let [{:keys [method url headers body]} request
-            urldata (url->options url)
+      (let [{:keys [method query-string query-params url headers body]} request
+            urldata (url->options url query-string query-params)
             options (merge (dissoc urldata :query)
                            {:headers (if headers (clj->js headers) #js {})
                             :method (c/keyword->method method)}

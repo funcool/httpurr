@@ -37,12 +37,24 @@
       (-listen [_ cb]
         (dfd/on-realized d (comp cb success) (comp cb error))))))
 
+(defn- make-uri
+  [url query-string]
+  (if (not query-string)
+    url
+    (let [idx (.indexOf url "?")]
+      (if (>= idx 0)
+        (str url "&" query-string)
+        (str url "?" query-string)))))
+
 (def client
   "A singleton instance of aleph client."
   (reify p/Client
     (-send [_ request {:keys [timeout] :as options}]
-      (let [url (c/make-uri (:url request) (:query-string request))
-            params (merge request {:url url  :request-timeout timeout})]
+      (let [url (make-uri (:url request) (:query-string request))
+            params (merge request
+                          {:url url}
+                          (when timeout
+                            {:request-timeout timeout}))]
         (-> (http/request params)
             (deferred->request))))))
 
