@@ -79,6 +79,20 @@
       (t/is (= (:url lreq) url-with-query))
       (t/is (empty? (:headers lreq))))))
 
+(t/deftest send-plain-get-with-encoded-query-params
+  (let [url "http://localhost/test"
+        query {:foo ["bar" "ba z"]}
+        url-with-query (str url "?" "foo=bar&foo=ba%20z")
+        req {:method :get
+             :query-params query
+             :url url}]
+
+    (send! req)
+
+    (let [lreq (last-request)]
+      (t/is (= (:method lreq) "GET"))
+      (t/is (= (:url lreq) url-with-query)))))
+
 (t/deftest send-plain-get-with-multiple-custom-headers
   (let [url "http://localhost/funcool/promesa"
         req {:method :get

@@ -91,6 +91,22 @@
       (t/is (= (:path lreq) path))
       (t/is (= (:query lreq) (.replaceAll query " " "%20"))))))
 
+(t/deftest send-plain-get-with-encoded-query-params
+  (let [path "/funcool/cats"
+        url (make-uri path)
+        query {:foo ["bar" "ba z"]}
+        req {:method :get
+             :query-params query
+             :url url}]
+
+    @(send! req)
+
+    (let [lreq @last-request]
+      ;; (println lreq)
+      (t/is (= (:method lreq) :get))
+      (t/is (= (:path lreq) path))
+      (t/is (= (:query lreq) "foo=bar&foo=ba+z")))))
+
 (t/deftest send-plain-get-with-custom-header
   (let [path "/funcool/cats"
         url (make-uri path)
