@@ -370,17 +370,29 @@ requests before sending them:
 
 === Auth
 
-The `httpur.auth` namespace contains the `basic` function for basic authentication.
-It accepts a realm, user and a password and returns a function that can be applied
-to a request for adding the basic auth headers:
-
+All that is needed for basic is to encode your user and password and add it 
+to your headers along with a WWW-Authenticate header to state your realm 
+here is an example:
 [source, clojure]
 ----
 (require '[httpurr.client.node :as node])
 (require '[promesa.core :as p])
-(require '[httpurr.auth :as auth])
+(require '[goog.crypt.base64 :as base64])
 
-(def credentials (auth/basic "Fake Realm" "Ada" "iinventedprogramming"))
+(defn auth-header
+  [user password]
+  (str "Basic " (base64/encodeString (str user ":" password))))
+
+(defn basic
+  [realm user password]
+  (fn [req]
+    (update req
+            :headers
+            (partial merge {"WWW-Authenticate" (str  "Basic realm=\"" realm "\"")
+                      "Authorization" (auth-header user password)}))))
+
+
+(def credentials (basic "Fake Realm" "Ada" "iinventedprogramming"))
 
 (defn get!
   ([url]
