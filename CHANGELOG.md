@@ -1,5 +1,12 @@
 # Changelog #
 
+## Version 0.6.1 ##
+
+Date: 2016-07-10
+
+- Update promesa to 1.4.0 (that fixes problems with advanced compilations)
+
+
 ## Version 0.6.0 ##
 
 Date: 2016-04-23
