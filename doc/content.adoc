@@ -1,6 +1,6 @@
 = httpurr
 Funcool
-0.6.0
+0.6.1
 :toc: left
 :!numbered:
 :idseparator: -
@@ -26,7 +26,7 @@ dependency vector on your *_project.clj_* file:
 
 [source,clojure]
 ----
-[funcool/httpurr "0.6.0"]
+[funcool/httpurr "0.6.1"]
 ----
 
 
