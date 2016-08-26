@@ -64,12 +64,13 @@
 
 (def client
   (reify p/Client
-    (-send [_ request {timeout :timeout :or {timeout 0} :as options}]
-      (let [{:keys [method url query-string query-params headers body]} request
+    (-send [_ request options]
+      (let [{:keys [timeout with-credentials?] :or {timeout 0 with-credentials? false}} options
+            {:keys [method url query-string query-params headers body]} request
             uri (make-uri url query-string query-params)
             method (c/keyword->method method)
             headers (if headers (clj->js headers) #js {})
-            xhr (.send *xhr-impl* uri nil method body headers timeout)]
+            xhr (.send *xhr-impl* uri nil method body headers timeout with-credentials?)]
         (Xhr. xhr)))))
 
 (def send! (partial c/send! client))
