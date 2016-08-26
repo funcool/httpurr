@@ -2,7 +2,7 @@
 
 ## Version 0.6.2 ##
 
-Date: Unreleased
+Date: 2016-08-26
 
 - Add `:with-credentials?` parameter for xhr client.
 - Update promesa to 1.5.0.
