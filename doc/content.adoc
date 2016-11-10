@@ -88,7 +88,8 @@ These functions have three arities:
 ----
 (http/get client
            "https://api.github.com/orgs/funcool"
-	   {"Content-Type" "application/json"})
+	   {:headers
+            {"Content-Type" "application/json"}})
 ----
 
 - Four arguments: like above and the fourth argument is an option map passed
@@ -98,7 +99,8 @@ These functions have three arities:
 ----
 (http/get client
            "https://api.github.com/orgs/funcool"
-	   {"Content-Type" "application/json"}
+	   {:headers
+            {"Content-Type" "application/json"}}
 	   {:timeout 2000})
 ----
 
