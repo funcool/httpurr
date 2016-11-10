@@ -112,7 +112,7 @@ and the `send!` function:
 (http/get "https://api.github.com/orgs/funcool")
 
 (http/send! {:method :get
-	       :url "https://api.github.com/orgs/funcool"})
+	     :url "https://api.github.com/orgs/funcool"})
 ----
 
 === Responses
