@@ -372,8 +372,8 @@ requests before sending them:
 
 === Auth
 
-All that is needed for basic is to encode your user and password and add it 
-to your headers along with a WWW-Authenticate header to state your realm 
+All that is needed for basic is to encode your user and password and add it
+to your headers along with a WWW-Authenticate header to state your realm
 here is an example:
 [source, clojure]
 ----
