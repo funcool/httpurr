@@ -45,6 +45,15 @@
                                  (.writeHead response 500 #js {"content-type" "text/plain"})
                                  (.end response "hello world"))
                                1000))
+
+              "/chunked"
+              (do
+                (.writeHead response 200 #js {"content-type" "text/plain"})
+                (doseq [x (range 2500)]
+                  (.write response (str "this is line number " x ", ")))
+                (.write response "\n")
+                (.end response "world"))
+
               (do
                 (.writeHead response 200 #js {"content-type" "text/plain"})
                 (.end response "hello world"))))]
@@ -68,6 +77,24 @@
       (p/then (send! req)
               (fn [response]
                 ;; (js/console.log "response")
+                (let [lreq @last-request]
+                  (t/is (= (:method lreq) :get))
+                  (t/is (= (:path lreq) path))
+                  (done)))))))
+
+;
+(t/deftest send-chunked
+  (t/async done
+    (let [path "/chunked"
+          uri (make-uri path)
+          req {:method :get
+               :url uri
+               :headers {}}]
+
+      (p/then (send! req)
+              (fn [response]
+                (t/is (= (count (.split (str (:body response)) ","))
+                         2501))
                 (let [lreq @last-request]
                   (t/is (= (:method lreq) :get))
                   (t/is (= (:path lreq) path))
