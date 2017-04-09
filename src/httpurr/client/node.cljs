@@ -52,8 +52,6 @@
               (let [chunks (atom [])]
                 (listen msg "readable" #(swap! chunks conj (.read msg)))
                 (listen msg "end" #(callback (HttpResponse. msg (s/join "" @chunks))))))
-            (on-message [msg]
-              (callback (HttpResponse. msg)))
             (on-timeout [err]
               (callback (HttpResponseError. :timeout nil)))
             (on-client-error [err]
