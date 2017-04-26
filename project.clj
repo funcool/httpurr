@@ -7,7 +7,7 @@
                  [org.clojure/clojurescript "1.9.225" :scope "provided"]
                  [aleph "0.4.1" :scope "provided"]
                  [org.clojure/test.check "0.9.0" :scope "test"]
-                 [funcool/promesa "1.5.0"]]
+                 [funcool/promesa "1.8.1"]]
 
   :profiles
   {:dev
