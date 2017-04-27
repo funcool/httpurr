@@ -193,14 +193,3 @@
                       (done)))
       (let [xhr (raw-last-request)]
         (.simulateTimeout xhr)))))
-
-(t/deftest request-can-be-aborted
-  (t/async done
-    (let [url "http://localhost/test"
-          req {:method :get
-               :url url
-               :headers {}}
-          resp (send! req)]
-      (-> (p/cancel! resp)
-          (p/catch (fn [res]
-                     (done)))))))

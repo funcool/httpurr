@@ -46,8 +46,6 @@
   (-listen [_ callback]
     (letfn [(listen [target event cb]
               (.on target event cb))
-            (on-abort [err]
-              (callback (HttpResponseError. :abort nil)))
             (on-response [msg]
               (let [chunks (atom [])]
                 (listen msg "readable" #(swap! chunks conj (.read msg)))
@@ -59,14 +57,9 @@
             (on-error [err]
               (callback (HttpResponseError. :exception err)))]
       (listen req "response" on-response)
-      (listen req "abort" on-abort)
       (listen req "timeout" on-timeout)
       (listen req "clientError" on-client-error)
-      (listen req "error" on-error)))
-
-  p/Abort
-  (-abort [_]
-    (.abort req)))
+      (listen req "error" on-error))))
 
 (def client
   (reify p/Client

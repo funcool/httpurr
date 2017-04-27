@@ -202,18 +202,6 @@
                 (t/is (= "hello world" (str (:body resp))))
                 (done))))))
 
-(t/deftest request-can-be-aborted
-  (t/async done
-    (let [path "/timeout"
-          url (make-uri path)
-          req {:method :get
-               :url url
-               :headers {}}
-          resp (send! req)]
-      (-> (p/cancel! resp)
-          (p/catch (fn [res]
-                     (done)))))))
-
 (t/deftest request-timeout
   (t/async done
     (let [path "/timeout"

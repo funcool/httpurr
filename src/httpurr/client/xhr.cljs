@@ -30,10 +30,6 @@
   (-listen [_ cb]
     (events/listen xhr EventType.COMPLETE #(cb (Xhr. xhr))))
 
-  p/Abort
-  (-abort [_]
-    (.abort xhr))
-
   p/Response
   (-success? [_]
     (or (.isSuccess xhr)

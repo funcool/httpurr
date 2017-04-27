@@ -28,19 +28,12 @@
   or abortions."
   [request]
   (p/promise
-   (fn promise-ctor
-     ([resolve reject]
-      (promise-ctor resolve reject nil))
-     ([resolve reject on-cancel]
-      (when (fn? on-cancel)
-        (on-cancel (fn []
-                     (when (satisfies? proto/Abort request)
-                       (proto/-abort request)))))
-      (proto/-listen request
-                     (fn [resp]
-                       (if (proto/-success? resp)
-                         (resolve (proto/-response resp))
-                         (reject (proto/-error resp)))))))))
+   (fn [resolve reject]
+     (proto/-listen request
+                    (fn [resp]
+                      (if (proto/-success? resp)
+                        (resolve (proto/-response resp))
+                        (reject (proto/-error resp))))))))
 
 (defn send!
   "Given a request map and maybe an options map, perform
@@ -58,12 +51,6 @@
   ([client request options]
    (let [request (perform! client request options)]
      (request->promise request))))
-
-(defn abort!
-  "Given a promise resulting from a request, make a best-effort
-  to abort the operation if the promise is still pending."
-  [p]
-  (p/cancel! p))
 
 ;; facade
 

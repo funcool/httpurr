@@ -11,9 +11,6 @@
     "Call the given `cb` function with a type that implements `Response`
     when the request completes"))
 
-(defprotocol Abort
-  (-abort [_]  "Abort a request."))
-
 (defprotocol Response
   (-success? [_]
     "Return `true` if a response was returned from the server.")
