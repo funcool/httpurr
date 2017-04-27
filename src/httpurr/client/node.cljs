@@ -1,6 +1,7 @@
 (ns httpurr.client.node
   (:refer-clojure :exclude [get])
   (:require [cljs.nodejs :as node]
+            [clojure.string :as s]
             [httpurr.client :as c]
             [httpurr.protocols :as p]))
 
@@ -21,13 +22,13 @@
      (when qs {:query qs})
      (when qp {:query (.stringify querystring (clj->js qp))}))))
 
-(deftype HttpResponse [msg]
+(deftype HttpResponse [msg body]
   p/Response
   (-success? [_] true)
   (-response [_]
     (let [headersv (partition 2 (js->clj (.-rawHeaders msg)))]
       {:status  (.-statusCode msg)
-       :body    (.read msg)
+       :body    body
        :headers (zipmap
                  (map first headersv)
                  (map second headersv))})))
@@ -48,7 +49,9 @@
             (on-abort [err]
               (callback (HttpResponseError. :abort nil)))
             (on-response [msg]
-              (listen msg "readable" (partial on-message msg)))
+              (let [chunks (atom [])]
+                (listen msg "readable" #(swap! chunks conj (.read msg)))
+                (listen msg "end" #(callback (HttpResponse. msg (s/join "" @chunks))))))
             (on-message [msg]
               (callback (HttpResponse. msg)))
             (on-timeout [err]
