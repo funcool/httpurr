@@ -49,7 +49,9 @@
             (on-response [msg]
               (let [chunks (atom [])]
                 (listen msg "readable" #(swap! chunks conj (.read msg)))
-                (listen msg "end" #(callback (HttpResponse. msg (s/join "" @chunks))))))
+                (listen msg "end" #(callback
+                                     ;concatenating the collected buffers, filtering out empty buffers
+                                     (HttpResponse. msg (.concat js/Buffer (clj->js (filter (fn [b] (not (nil? b))) @chunks))))))))
             (on-timeout [err]
               (callback (HttpResponseError. :timeout nil)))
             (on-client-error [err]
