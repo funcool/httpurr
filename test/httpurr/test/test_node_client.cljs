@@ -15,6 +15,7 @@
 
 (def ^:private http (node/require "http"))
 (def ^:private url (node/require "url"))
+(def ^:priavte fs (node/require "fs"))
 (def ^:const port 44556)
 
 (defn- read-request
@@ -99,6 +100,20 @@
                   (t/is (= (:method lreq) :get))
                   (t/is (= (:path lreq) path))
                   (done)))))))
+
+(t/deftest send-binary
+  (t/async done
+    (let [path "/binary"
+          uri (make-uri path)
+          req {:method :get
+               :url uri
+               :headers {}}]
+
+      (p/then (send! req)
+              (fn [response]
+                (println (:body response))
+                (done))))))
+
 
 (t/deftest send-plain-get-with-query-string
   (t/async done
