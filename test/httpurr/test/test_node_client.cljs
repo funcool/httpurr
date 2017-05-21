@@ -109,7 +109,7 @@
 
       (p/then (send! req)
               (fn [response]
-                (t/is (= (get (:headers response) "Content-Length") (str (count (:body response)))))
+                (t/is (= (get (:headers response) "Content-Length") (str (.-length (:body response)))))
                 (done)
                 )))))
 
@@ -122,7 +122,7 @@
 
       (p/then (send! req)
               (fn [response]
-                (t/is (= (get (:headers response) "Content-Length") (str (count (:body response)))))
+                (t/is (= (get (:headers response) "Content-Length") (str (.-length (:body response)))))
                 (done)
                 )))))
 
