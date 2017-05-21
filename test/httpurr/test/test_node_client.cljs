@@ -15,7 +15,6 @@
 
 (def ^:private http (node/require "http"))
 (def ^:private url (node/require "url"))
-(def ^:priavte fs (node/require "fs"))
 (def ^:const port 44556)
 
 (defn- read-request
