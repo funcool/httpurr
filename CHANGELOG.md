@@ -1,5 +1,15 @@
 # Changelog #
 
+## Version 1.0.0 ##
+
+Date: 2017-05-28
+
+- Fix incorrect body fetching inconsistencies on nodejs.
+- Bump promesa to 1.8.1
+- Bump aleph to 0.4.3
+- Remove support for aboirt that is no longer supported by promesa.
+
+
 ## Version 0.6.2 ##
 
 Date: 2016-08-26
