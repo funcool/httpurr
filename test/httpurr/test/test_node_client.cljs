@@ -100,6 +100,33 @@
                   (t/is (= (:path lreq) path))
                   (done)))))))
 
+(t/deftest send-small-binary
+  (t/async done
+    (let [uri "https://clojars.org/repo/funcool/httpurr/0.6.2/httpurr-0.6.2.jar.md5"
+          req {:method :get
+               :url uri
+               :headers {}}]
+
+      (p/then (send! req)
+              (fn [response]
+                (t/is (= (get (:headers response) "Content-Length") (str (.-length (:body response)))))
+                (done)
+                )))))
+
+(t/deftest send-medium-binary
+  (t/async done
+    (let [uri "https://clojars.org/repo/funcool/httpurr/0.6.2/httpurr-0.6.2.jar"
+          req {:method :get
+               :url uri
+               :headers {}}]
+
+      (p/then (send! req)
+              (fn [response]
+                (t/is (= (get (:headers response) "Content-Length") (str (.-length (:body response)))))
+                (done)
+                )))))
+
+
 (t/deftest send-plain-get-with-query-string
   (t/async done
     (let [path "/test"
