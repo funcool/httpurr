@@ -63,8 +63,13 @@ with `httpurr`, note that this client will only work on browser environments:
              :url "https://api.github.com/orgs/funcool"})
 ----
 
-The options map accepts a `:timeout`, in miliseconds, after which the promise will
-be rejected with the `:timeout` keyword as a value.
+The options map accepts the following keys:
+
+ - `:timeout`: A time, specified in miliseconds, after which the promise will
+   be rejected with the `:timeout` keyword as a value.
+ - `:with-credentials?`: A boolean, defaulting to false, which if true will 
+   use credentials such as cookies, authorization headers or TLS client certificates
+   during cross-site requests.
 
 Furthermore, the `httpurr.client` namespaces exposes `get`, `put`, `post`,
 `patch`, `delete`, `head`, `options` and `trace` methods with identical signatures. They
