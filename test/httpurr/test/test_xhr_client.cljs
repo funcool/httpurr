@@ -6,7 +6,6 @@
   (:import goog.testing.net.XhrIo))
 
 ;; --- helpers
-
 (defn raw-last-request
   []
   (aget (.getSendInstances XhrIo) 0))

@@ -1,4 +1,4 @@
-(defproject funcool/httpurr "1.0.0"
+(defproject funcool/httpurr "1.1.0"
   :description "A ring-inspired, promise-returning, simple Clojure(Script) HTTP client."
   :url "http://funcool.github.io/httpurr"
   :license {:name "Public Domain" :url "http://unlicense.org"}
@@ -11,4 +11,4 @@
 
   :profiles
   {:dev
-   {:plugins [[lein-ancient "0.6.10"]]}})
+   {:plugins [[lein-ancient "0.6.15"]]}})

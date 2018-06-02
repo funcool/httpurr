@@ -1,5 +1,12 @@
 # Changelog #
 
+## Version 1.1.0 ##
+
+Date: 2018-06-02
+
+- Add alternative xhr client.
+
+
 ## Version 1.0.0 ##
 
 Date: 2017-05-28
