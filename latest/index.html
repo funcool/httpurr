@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge"><![endif]-->
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="generator" content="Asciidoctor 1.5.5">
+<meta name="generator" content="Asciidoctor 1.5.6.2">
 <meta name="author" content="Funcool">
 <title>httpurr</title>
 <style>
@@ -86,7 +86,7 @@
 <h1>httpurr</h1>
 <div class="details">
 <span id="author" class="author">Funcool</span><br>
-<span id="revdate">1.0.0</span>
+<span id="revdate">1.1.0</span>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
@@ -157,7 +157,7 @@ dependency vector on your <strong><em>project.clj</em></strong> file:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="pygments highlight"><code data-lang="clojure"><span class="tok-p">[</span><span class="tok-nv">funcool/httpurr</span> <span class="tok-s">&quot;1.0.0&quot;</span><span class="tok-p">]</span></code></pre>
+<pre class="pygments highlight"><code data-lang="clojure"><span></span><span class="tok-p">[</span><span class="tok-nv">funcool/httpurr</span> <span class="tok-s">&quot;1.1.0&quot;</span><span class="tok-p">]</span></code></pre>
 </div>
 </div>
 </div>
@@ -208,7 +208,7 @@ with <code>httpurr</code>, note that this client will only work on browser envir
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="pygments highlight"><code data-lang="clojure"><span class="tok-p">(</span><span class="tok-nf">require</span> <span class="tok-o">&#39;</span><span class="tok-p">[</span><span class="tok-nv">httpurr.client</span> <span class="tok-ss">:as</span> <span class="tok-nv">http</span><span class="tok-p">])</span>
+<pre class="pygments highlight"><code data-lang="clojure"><span></span><span class="tok-p">(</span><span class="tok-nf">require</span> <span class="tok-o">&#39;</span><span class="tok-p">[</span><span class="tok-nv">httpurr.client</span> <span class="tok-ss">:as</span> <span class="tok-nv">http</span><span class="tok-p">])</span>
 <span class="tok-p">(</span><span class="tok-nf">require</span> <span class="tok-o">&#39;</span><span class="tok-p">[</span><span class="tok-nv">httpurr.client.xhr</span> <span class="tok-ss">:refer</span> <span class="tok-p">[</span><span class="tok-nv">client</span><span class="tok-p">]])</span>
 
 <span class="tok-p">(</span><span class="tok-nf">http/send!</span> <span class="tok-nv">client</span>
@@ -217,8 +217,20 @@ with <code>httpurr</code>, note that this client will only work on browser envir
 </div>
 </div>
 <div class="paragraph">
-<p>The options map accepts a <code>:timeout</code>, in miliseconds, after which the promise will
+<p>The options map accepts the following keys:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>:timeout</code>: A time, specified in miliseconds, after which the promise will
 be rejected with the <code>:timeout</code> keyword as a value.</p>
+</li>
+<li>
+<p><code>:with-credentials?</code>: A boolean, defaulting to false, which if true will
+use credentials such as cookies, authorization headers or TLS client certificates
+during cross-site requests.</p>
+</li>
+</ul>
 </div>
 <div class="paragraph">
 <p>Furthermore, the <code>httpurr.client</code> namespaces exposes <code>get</code>, <code>put</code>, <code>post</code>,
@@ -238,7 +250,7 @@ of the request.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="pygments highlight"><code data-lang="clojure"><span class="tok-p">(</span><span class="tok-nf">http/get</span> <span class="tok-nv">client</span>
+<pre class="pygments highlight"><code data-lang="clojure"><span></span><span class="tok-p">(</span><span class="tok-nf">http/get</span> <span class="tok-nv">client</span>
 	   <span class="tok-s">&quot;https://api.github.com/orgs/funcool&quot;</span><span class="tok-p">)</span></code></pre>
 </div>
 </div>
@@ -252,7 +264,7 @@ of the request.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="pygments highlight"><code data-lang="clojure"><span class="tok-p">(</span><span class="tok-nf">http/get</span> <span class="tok-nv">client</span>
+<pre class="pygments highlight"><code data-lang="clojure"><span></span><span class="tok-p">(</span><span class="tok-nf">http/get</span> <span class="tok-nv">client</span>
            <span class="tok-s">&quot;https://api.github.com/orgs/funcool&quot;</span>
 	   <span class="tok-p">{</span><span class="tok-ss">:headers</span>
             <span class="tok-p">{</span><span class="tok-s">&quot;Content-Type&quot;</span> <span class="tok-s">&quot;application/json&quot;</span><span class="tok-p">}})</span></code></pre>
@@ -268,7 +280,7 @@ to <code>send!</code>.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="pygments highlight"><code data-lang="clojure"><span class="tok-p">(</span><span class="tok-nf">http/get</span> <span class="tok-nv">client</span>
+<pre class="pygments highlight"><code data-lang="clojure"><span></span><span class="tok-p">(</span><span class="tok-nf">http/get</span> <span class="tok-nv">client</span>
            <span class="tok-s">&quot;https://api.github.com/orgs/funcool&quot;</span>
 	   <span class="tok-p">{</span><span class="tok-ss">:headers</span>
             <span class="tok-p">{</span><span class="tok-s">&quot;Content-Type&quot;</span> <span class="tok-s">&quot;application/json&quot;</span><span class="tok-p">}}</span>
@@ -281,7 +293,7 @@ and the <code>send!</code> function:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="pygments highlight"><code data-lang="clojure"><span class="tok-p">(</span><span class="tok-nf">require</span> <span class="tok-o">&#39;</span><span class="tok-p">[</span><span class="tok-nv">httpurr.client.xhr</span> <span class="tok-ss">:as</span> <span class="tok-nv">http</span><span class="tok-p">])</span>
+<pre class="pygments highlight"><code data-lang="clojure"><span></span><span class="tok-p">(</span><span class="tok-nf">require</span> <span class="tok-o">&#39;</span><span class="tok-p">[</span><span class="tok-nv">httpurr.client.xhr</span> <span class="tok-ss">:as</span> <span class="tok-nv">http</span><span class="tok-p">])</span>
 
 <span class="tok-p">(</span><span class="tok-nf">http/get</span> <span class="tok-s">&quot;https://api.github.com/orgs/funcool&quot;</span><span class="tok-p">)</span>
 
@@ -326,7 +338,7 @@ wheter a response is of a certain type.</p>
 <div class="listingblock">
 <div class="title">For 1xx status codes the predicate is <code>informational?</code></div>
 <div class="content">
-<pre class="pygments highlight"><code data-lang="clojure"><span class="tok-p">(</span><span class="tok-nf">require</span> <span class="tok-o">&#39;</span><span class="tok-p">[</span><span class="tok-nv">httpurr.status</span> <span class="tok-ss">:as</span> <span class="tok-nv">s</span><span class="tok-p">])</span>
+<pre class="pygments highlight"><code data-lang="clojure"><span></span><span class="tok-p">(</span><span class="tok-nf">require</span> <span class="tok-o">&#39;</span><span class="tok-p">[</span><span class="tok-nv">httpurr.status</span> <span class="tok-ss">:as</span> <span class="tok-nv">s</span><span class="tok-p">])</span>
 
 <span class="tok-p">(</span><span class="tok-nf">s/informational?</span> <span class="tok-p">{</span><span class="tok-ss">:status</span> <span class="tok-nv">s/continue</span><span class="tok-p">})</span>
 <span class="tok-c1">;; =&gt; true</span></code></pre>
@@ -335,7 +347,7 @@ wheter a response is of a certain type.</p>
 <div class="listingblock">
 <div class="title">For 2xx status codes the predicate is <code>success?</code></div>
 <div class="content">
-<pre class="pygments highlight"><code data-lang="clojure"><span class="tok-p">(</span><span class="tok-nf">require</span> <span class="tok-o">&#39;</span><span class="tok-p">[</span><span class="tok-nv">httpurr.status</span> <span class="tok-ss">:as</span> <span class="tok-nv">s</span><span class="tok-p">])</span>
+<pre class="pygments highlight"><code data-lang="clojure"><span></span><span class="tok-p">(</span><span class="tok-nf">require</span> <span class="tok-o">&#39;</span><span class="tok-p">[</span><span class="tok-nv">httpurr.status</span> <span class="tok-ss">:as</span> <span class="tok-nv">s</span><span class="tok-p">])</span>
 
 <span class="tok-p">(</span><span class="tok-nf">s/success?</span> <span class="tok-p">{</span><span class="tok-ss">:status</span> <span class="tok-nv">s/ok</span><span class="tok-p">})</span>
 <span class="tok-c1">;; =&gt; true</span></code></pre>
@@ -344,7 +356,7 @@ wheter a response is of a certain type.</p>
 <div class="listingblock">
 <div class="title">For 3xx status codes the predicate is <code>redirection?</code></div>
 <div class="content">
-<pre class="pygments highlight"><code data-lang="clojure"><span class="tok-p">(</span><span class="tok-nf">require</span> <span class="tok-o">&#39;</span><span class="tok-p">[</span><span class="tok-nv">httpurr.status</span> <span class="tok-ss">:as</span> <span class="tok-nv">s</span><span class="tok-p">])</span>
+<pre class="pygments highlight"><code data-lang="clojure"><span></span><span class="tok-p">(</span><span class="tok-nf">require</span> <span class="tok-o">&#39;</span><span class="tok-p">[</span><span class="tok-nv">httpurr.status</span> <span class="tok-ss">:as</span> <span class="tok-nv">s</span><span class="tok-p">])</span>
 
 <span class="tok-p">(</span><span class="tok-nf">s/redirection?</span> <span class="tok-p">{</span><span class="tok-ss">:status</span> <span class="tok-nv">s/moved-permanently</span><span class="tok-p">})</span>
 <span class="tok-c1">;; =&gt; true</span></code></pre>
@@ -353,7 +365,7 @@ wheter a response is of a certain type.</p>
 <div class="listingblock">
 <div class="title">For 4xx status codes the predicate is <code>client-error?</code></div>
 <div class="content">
-<pre class="pygments highlight"><code data-lang="clojure"><span class="tok-p">(</span><span class="tok-nf">require</span> <span class="tok-o">&#39;</span><span class="tok-p">[</span><span class="tok-nv">httpurr.status</span> <span class="tok-ss">:as</span> <span class="tok-nv">s</span><span class="tok-p">])</span>
+<pre class="pygments highlight"><code data-lang="clojure"><span></span><span class="tok-p">(</span><span class="tok-nf">require</span> <span class="tok-o">&#39;</span><span class="tok-p">[</span><span class="tok-nv">httpurr.status</span> <span class="tok-ss">:as</span> <span class="tok-nv">s</span><span class="tok-p">])</span>
 
 <span class="tok-p">(</span><span class="tok-nf">s/client-error?</span> <span class="tok-p">{</span><span class="tok-ss">:status</span> <span class="tok-nv">s/not-found</span><span class="tok-p">})</span>
 <span class="tok-c1">;; =&gt; true</span></code></pre>
@@ -362,7 +374,7 @@ wheter a response is of a certain type.</p>
 <div class="listingblock">
 <div class="title">For 5xx status codes the predicate is <code>server-error?</code></div>
 <div class="content">
-<pre class="pygments highlight"><code data-lang="clojure"><span class="tok-p">(</span><span class="tok-nf">require</span> <span class="tok-o">&#39;</span><span class="tok-p">[</span><span class="tok-nv">httpurr.status</span> <span class="tok-ss">:as</span> <span class="tok-nv">s</span><span class="tok-p">])</span>
+<pre class="pygments highlight"><code data-lang="clojure"><span></span><span class="tok-p">(</span><span class="tok-nf">require</span> <span class="tok-o">&#39;</span><span class="tok-p">[</span><span class="tok-nv">httpurr.status</span> <span class="tok-ss">:as</span> <span class="tok-nv">s</span><span class="tok-p">])</span>
 
 <span class="tok-p">(</span><span class="tok-nf">s/server-error?</span> <span class="tok-p">{</span><span class="tok-ss">:status</span> <span class="tok-nv">s/internal-server-error</span><span class="tok-p">})</span>
 <span class="tok-c1">;; =&gt; true</span></code></pre>
@@ -399,7 +411,7 @@ give it a go:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="pygments highlight"><code data-lang="clojure"><span class="tok-p">(</span><span class="tok-nf">require</span> <span class="tok-o">&#39;</span><span class="tok-p">[</span><span class="tok-nv">httpurr.status</span> <span class="tok-ss">:as</span> <span class="tok-nv">s</span><span class="tok-p">])</span>
+<pre class="pygments highlight"><code data-lang="clojure"><span></span><span class="tok-p">(</span><span class="tok-nf">require</span> <span class="tok-o">&#39;</span><span class="tok-p">[</span><span class="tok-nv">httpurr.status</span> <span class="tok-ss">:as</span> <span class="tok-nv">s</span><span class="tok-p">])</span>
 <span class="tok-p">(</span><span class="tok-nf">require</span> <span class="tok-o">&#39;</span><span class="tok-p">[</span><span class="tok-nv">httpurr.client.xhr</span> <span class="tok-ss">:as</span> <span class="tok-nv">xhr</span><span class="tok-p">])</span>
 <span class="tok-p">(</span><span class="tok-nf">require</span> <span class="tok-o">&#39;</span><span class="tok-p">[</span><span class="tok-nv">promesa.core</span> <span class="tok-ss">:as</span> <span class="tok-nv">p</span><span class="tok-p">])</span>
 
@@ -439,7 +451,7 @@ handling in your code.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="pygments highlight"><code data-lang="clojure"><span class="tok-p">(</span><span class="tok-kd">defn </span><span class="tok-nv">entity</span>
+<pre class="pygments highlight"><code data-lang="clojure"><span></span><span class="tok-p">(</span><span class="tok-kd">defn </span><span class="tok-nv">entity</span>
   <span class="tok-p">[</span><span class="tok-nv">id</span><span class="tok-p">]</span>
   <span class="tok-p">(</span><span class="tok-nb">-&gt; </span><span class="tok-p">(</span><span class="tok-nf">p/then</span> <span class="tok-p">(</span><span class="tok-nf">xhr/get</span> <span class="tok-p">(</span><span class="tok-nf">id-&gt;url</span> <span class="tok-nv">id</span><span class="tok-p">))</span>
               <span class="tok-nv">process-response</span><span class="tok-p">)</span>
@@ -453,7 +465,7 @@ can use the <code>branch</code> function:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="pygments highlight"><code data-lang="clojure"><span class="tok-p">(</span><span class="tok-kd">defn </span><span class="tok-nv">entity</span> <span class="tok-p">[</span><span class="tok-nv">id</span><span class="tok-p">]</span>
+<pre class="pygments highlight"><code data-lang="clojure"><span></span><span class="tok-p">(</span><span class="tok-kd">defn </span><span class="tok-nv">entity</span> <span class="tok-p">[</span><span class="tok-nv">id</span><span class="tok-p">]</span>
   <span class="tok-p">(</span><span class="tok-nf">p/branch</span> <span class="tok-p">(</span><span class="tok-nf">xhr/get</span> <span class="tok-p">(</span><span class="tok-nf">id-&gt;url</span> <span class="tok-nv">id</span><span class="tok-p">))</span>
             <span class="tok-nv">process-response</span>
             <span class="tok-p">(</span><span class="tok-k">fn </span><span class="tok-p">[</span><span class="tok-nv">err</span><span class="tok-p">]</span>
@@ -542,7 +554,7 @@ a decoder function that converts JSON payloads to ClojureScript data structures:
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="pygments highlight"><code data-lang="clojure"><span class="tok-p">(</span><span class="tok-nf">require</span> <span class="tok-o">&#39;</span><span class="tok-p">[</span><span class="tok-nv">httpurr.client.node</span> <span class="tok-ss">:as</span> <span class="tok-nv">node</span><span class="tok-p">])</span>
+<pre class="pygments highlight"><code data-lang="clojure"><span></span><span class="tok-p">(</span><span class="tok-nf">require</span> <span class="tok-o">&#39;</span><span class="tok-p">[</span><span class="tok-nv">httpurr.client.node</span> <span class="tok-ss">:as</span> <span class="tok-nv">node</span><span class="tok-p">])</span>
 <span class="tok-p">(</span><span class="tok-nf">require</span> <span class="tok-o">&#39;</span><span class="tok-p">[</span><span class="tok-nv">promesa.core</span> <span class="tok-ss">:as</span> <span class="tok-nv">p</span><span class="tok-p">])</span>
 
 <span class="tok-p">(</span><span class="tok-kd">defn </span><span class="tok-nv">decode</span>
@@ -578,7 +590,7 @@ requests before sending them:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="pygments highlight"><code data-lang="clojure"><span class="tok-p">(</span><span class="tok-kd">defn </span><span class="tok-nv">encode</span>
+<pre class="pygments highlight"><code data-lang="clojure"><span></span><span class="tok-p">(</span><span class="tok-kd">defn </span><span class="tok-nv">encode</span>
   <span class="tok-p">[</span><span class="tok-nv">request</span><span class="tok-p">]</span>
   <span class="tok-p">(</span><span class="tok-nf">update</span> <span class="tok-nv">request</span> <span class="tok-ss">:body</span> <span class="tok-o">#</span><span class="tok-p">(</span><span class="tok-nf">js/JSON.stringify</span> <span class="tok-p">(</span><span class="tok-nf">clj-&gt;js</span> <span class="tok-nv">%</span><span class="tok-p">))))</span>
 
@@ -619,7 +631,7 @@ here is an example:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="pygments highlight"><code data-lang="clojure"><span class="tok-p">(</span><span class="tok-nf">require</span> <span class="tok-o">&#39;</span><span class="tok-p">[</span><span class="tok-nv">httpurr.client.node</span> <span class="tok-ss">:as</span> <span class="tok-nv">node</span><span class="tok-p">])</span>
+<pre class="pygments highlight"><code data-lang="clojure"><span></span><span class="tok-p">(</span><span class="tok-nf">require</span> <span class="tok-o">&#39;</span><span class="tok-p">[</span><span class="tok-nv">httpurr.client.node</span> <span class="tok-ss">:as</span> <span class="tok-nv">node</span><span class="tok-p">])</span>
 <span class="tok-p">(</span><span class="tok-nf">require</span> <span class="tok-o">&#39;</span><span class="tok-p">[</span><span class="tok-nv">promesa.core</span> <span class="tok-ss">:as</span> <span class="tok-nv">p</span><span class="tok-p">])</span>
 <span class="tok-p">(</span><span class="tok-nf">require</span> <span class="tok-o">&#39;</span><span class="tok-p">[</span><span class="tok-nv">goog.crypt.base64</span> <span class="tok-ss">:as</span> <span class="tok-nv">base64</span><span class="tok-p">])</span>
 
@@ -677,14 +689,14 @@ is sent correctly.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="pygments highlight"><code data-lang="clojure"><span class="tok-p">(</span><span class="tok-nf">require</span> <span class="tok-o">&#39;</span><span class="tok-p">[</span><span class="tok-nv">httpurr.client.xhr</span> <span class="tok-ss">:as</span> <span class="tok-nv">xhr</span><span class="tok-p">])</span>
+<pre class="pygments highlight"><code data-lang="clojure"><span></span><span class="tok-p">(</span><span class="tok-nf">require</span> <span class="tok-o">&#39;</span><span class="tok-p">[</span><span class="tok-nv">httpurr.client.xhr</span> <span class="tok-ss">:as</span> <span class="tok-nv">xhr</span><span class="tok-p">])</span>
 
 <span class="tok-p">(</span><span class="tok-k">def </span><span class="tok-nv">fd</span> <span class="tok-p">(</span><span class="tok-nf">js/FormData.</span><span class="tok-p">))</span>
 <span class="tok-p">(</span><span class="tok-nf">.append</span> <span class="tok-nv">fd</span> <span class="tok-s">&quot;foo&quot;</span> <span class="tok-s">&quot;bar&quot;</span><span class="tok-p">)</span>
 <span class="tok-p">(</span><span class="tok-nf">.append</span> <span class="tok-nv">fd</span> <span class="tok-s">&quot;baz&quot;</span> <span class="tok-s">&quot;foo&quot;</span><span class="tok-p">)</span>
 
 <span class="tok-p">(</span><span class="tok-kd">defn </span><span class="tok-nv">parse-json-body</span>
-  <span class="tok-p">[{</span><span class="tok-ss">:keys</span> <span class="tok-p">[</span><span class="tok-nv">body</span><span class="tok-p">}]</span>
+  <span class="tok-p">[{</span><span class="tok-ss">:keys</span> <span class="tok-p">[</span><span class="tok-nv">body</span><span class="tok-p">]}]</span>
   <span class="tok-p">(</span><span class="tok-nf">js/JSON.parse</span> <span class="tok-nv">body</span><span class="tok-p">))</span>
 
 <span class="tok-p">(</span><span class="tok-kd">defn </span><span class="tok-nv">clj-body</span>
@@ -799,7 +811,7 @@ contributions. Just open a issue or pull request.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="pygments highlight"><code data-lang="text">git clone https://github.com/funcool/httpurr</code></pre>
+<pre class="pygments highlight"><code data-lang="text"><span></span>git clone https://github.com/funcool/httpurr</code></pre>
 </div>
 </div>
 </div>
@@ -810,7 +822,7 @@ contributions. Just open a issue or pull request.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="pygments highlight"><code data-lang="text">./scripts/build
+<pre class="pygments highlight"><code data-lang="text"><span></span>./scripts/build
 node out/tests.js</code></pre>
 </div>
 </div>
@@ -857,7 +869,7 @@ For more information, please refer to &lt;http://unlicense.org/&gt;</pre>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2017-05-28 20:33:08 CEST
+Last updated 2018-06-02 11:17:42 CEST
 </div>
 </div>
 </body>
