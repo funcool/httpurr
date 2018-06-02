@@ -445,7 +445,7 @@ is sent correctly.
 (.append fd "baz" "foo")
 
 (defn parse-json-body
-  [{:keys [body}]
+  [{:keys [body]}]
   (js/JSON.parse body))
 
 (defn clj-body
