@@ -6,6 +6,7 @@
   :dependencies [[org.clojure/clojure "1.8.0" :scope "provided"]
                  [org.clojure/clojurescript "1.9.225" :scope "provided"]
                  [aleph "0.4.3" :scope "provided"]
+                 [org.martinklepsch/clj-http-lite "0.4.1" :scope "provided"]
                  [org.clojure/test.check "0.9.0" :scope "test"]
                  [funcool/promesa "1.8.1"]]
 
