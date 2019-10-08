@@ -27,7 +27,7 @@
   response and rejected on timeout, exceptions, HTTP errors
   or abortions."
   [request]
-  (p/promise
+  (p/create
    (fn [resolve reject]
      (proto/-listen request
                     (fn [resp]

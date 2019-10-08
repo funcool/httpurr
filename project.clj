@@ -8,7 +8,7 @@
                  [aleph "0.4.3" :scope "provided"]
                  [org.martinklepsch/clj-http-lite "0.4.1" :scope "provided"]
                  [org.clojure/test.check "0.9.0" :scope "test"]
-                 [funcool/promesa "1.8.1"]]
+                 [funcool/promesa "4.0.2"]]
 
   :profiles
   {:dev
