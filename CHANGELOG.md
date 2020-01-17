@@ -1,9 +1,10 @@
 # Changelog #
 
-## Unreleased ## 
+## Version 2.0.0 ## 
 
 - Upgrade [promesa](https://github.com/funcool/promesa/blob/master/CHANGELOG.md#version-402)
-  to v4
+  to v5
+
 
 ## Version 1.1.0 ##
 
