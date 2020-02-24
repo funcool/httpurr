@@ -1,8 +1,9 @@
 language: clojure
 lein: lein
+dist: trusty
 jdk:
-  - oraclejdk8
-  - oraclejdk9
+  - openjdk8
+  - openjdk11
 script:
 - ./scripts/build
 - node out/tests.js
